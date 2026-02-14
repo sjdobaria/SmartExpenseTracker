@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Transactions | SmartTracker</title>
+  <link rel="stylesheet" href="{% static 'transactions/css/transactions.css'%}" />
+</head>
+<body>
+
+  <div class="dashboard-wrapper">
+
+    <!-- Sidebar (Same as Dashboard) -->
+  <aside class="sidebar">
+    <h2 class="brand">Smart<span>Tracker</span></h2>
+
+    <nav class="menu">
+      <a href="{% url 'dashboard:dashboard_view'%}">Dashboard</a>
+      <a href="{%url 'transactions:add_transaction_view'%}">Add Transaction</a>
+      <a href="{%url 'transactions:transactions_view'%}" class="active">Transactions</a>
+      <a href="categories.html">Categories</a>
+      <a href="#" class="logout">Logout</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Topbar -->
+    <header class="topbar">
+      <h1>Transactions</h1>
+      <div class="top-actions">
+        <a href="add-transaction.html" class="btn primary">+ Add Transaction</a>
+        <a href="dashboard.html" class="btn secondary">← Back to Dashboard</a>
+      </div>
+    </header>
+
+    <!-- Filters -->
+    <section class="filters">
+      <div class="filter-group">
+        <label>Date</label>
+        <input type="month" />
+      </div>
+
+      <div class="filter-group">
+        <label>Category</label>
+        <select>
+          <option value="">All</option>
+          <option>Food</option>
+          <option>Transport</option>
+          <option>Shopping</option>
+          <option>Bills</option>
+          <option>Entertainment</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Type</label>
+        <select>
+          <option value="">All</option>
+          <option>Income</option>
+          <option>Expense</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Transactions Table -->
+    <main class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Type</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>12 Feb 2026</td>
+            <td>Grocery Shopping</td>
+            <td>Food</td>
+            <td>₹1,200</td>
+            <td class="expense-text">Expense</td>
+            <td>
+              <button class="action-btn edit">Edit</button>
+              <button class="action-btn delete">Delete</button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>10 Feb 2026</td>
+            <td>Salary</td>
+            <td>Income</td>
+            <td>₹40,000</td>
+            <td class="income-text">Income</td>
+            <td>
+              <button class="action-btn edit">Edit</button>
+              <button class="action-btn delete">Delete</button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>08 Feb 2026</td>
+            <td>Uber Ride</td>
+            <td>Transport</td>
+            <td>₹350</td>
+            <td class="expense-text">Expense</td>
+            <td>
+              <button class="action-btn edit">Edit</button>
+              <button class="action-btn delete">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+
+  </div>
+
+</body>
+</html>

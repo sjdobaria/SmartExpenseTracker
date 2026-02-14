@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | Smart Expense Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{%static 'dashboard/css/dashboard.css'%}">
+</head>
+
+<body>
+<div class="dashboard-wrapper">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="brand">Smart<span>Tracker</span></h2>
+
+        <nav class="menu">
+            <a href="{%url 'dashboard:dashboard_view'%}" class="active">Dashboard</a>
+            <a href="{%url 'transactions:add_transaction_view'%}">Add Transaction</a>
+            <a href="{%url 'transactions:transactions_view'%}">Transactions</a>
+            <a href="categories.html">Categories</a>
+            <a href="#" class="logout">Logout</a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Top Bar -->
+        <header class="topbar">
+            <h1>Dashboard</h1>
+            <p>Welcome back, User 👋</p>
+        </header>
+
+        <!-- Summary Cards -->
+        <section class="summary-cards">
+            <div class="card income">
+                <h3>Total Income</h3>
+                <p>₹45,000</p>
+            </div>
+
+            <div class="card expense">
+                <h3>Total Expenses</h3>
+                <p>₹28,500</p>
+            </div>
+
+            <div class="card balance">
+                <h3>Current Balance</h3>
+                <p>₹16,500</p>
+            </div>
+
+            <div class="card savings">
+                <h3>Savings</h3>
+                <p>₹8,000</p>
+            </div>
+        </section>
+
+        <!-- Charts Placeholder -->
+        <section class="charts">
+            <div class="chart-box">
+                <h3>Expense by Category</h3>
+                <div class="chart-placeholder">Pie Chart</div>
+            </div>
+
+            <div class="chart-box">
+                <h3>Monthly Trend</h3>
+                <div class="chart-placeholder">Line Chart</div>
+            </div>
+        </section>
+
+        <!-- Recent Transactions -->
+        <section class="transactions">
+            <h2>Recent Transactions</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>12 Feb</td>
+                        <td>Grocery Shopping</td>
+                        <td>Food</td>
+                        <td>₹1,200</td>
+                        <td class="expense-text">Expense</td>
+                    </tr>
+                    <tr>
+                        <td>10 Feb</td>
+                        <td>Salary</td>
+                        <td>Income</td>
+                        <td>₹40,000</td>
+                        <td class="income-text">Income</td>
+                    </tr>
+                    <tr>
+                        <td>08 Feb</td>
+                        <td>Uber Ride</td>
+                        <td>Transport</td>
+                        <td>₹350</td>
+                        <td class="expense-text">Expense</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+</div>
+
+{% comment %} <!-- Add Transaction Modal -->
+<div class="modal" id="transactionModal">
+    <div class="modal-content">
+        <h3>Add Transaction</h3>
+
+        <input type="text" placeholder="Description">
+        <input type="number" placeholder="Amount">
+        <select>
+            <option>Food</option>
+            <option>Transport</option>
+            <option>Shopping</option>
+            <option>Bills</option>
+        </select>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-save">Save</button>
+        </div>
+    </div>
+</div> {% endcomment %}
+<script>
+    // Sidebar active state
+    document.querySelectorAll(".menu a").forEach(link => {
+        link.addEventListener("click", function () {
+            document.querySelectorAll(".menu a").forEach(l => l.classList.remove("active"));
+            this.classList.add("active");
+
+            if (this.textContent.includes("Add Transaction")) {
+                openModal();
+            }
+        });
+    });
+
+    function openModal() {
+        document.getElementById("transactionModal").style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("transactionModal").style.display = "none";
+    }
+
+    // Close modal when clicking outside
+    document.getElementById("transactionModal").addEventListener("click", function (e) {
+        if (e.target === this) closeModal();
+    });
+</script>
+
+</body>
+</html>

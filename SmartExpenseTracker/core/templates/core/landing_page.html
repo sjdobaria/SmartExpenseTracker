@@ -22,7 +22,7 @@
                 <a href="#hero" class="active">Home</a>
                 <a href="#features">Features</a>
                 <a href="#footer">Contact</a>
-                <a href="{% url 'accounts:login' %}" class="login-link">Login</a>
+                <a href="{% url 'accounts:login_view' %}" class="login-link">Login</a>
             </div>
         </nav>
 
@@ -38,7 +38,7 @@
                     track income and expenses effortlessly with our encrypted dashboard.
                 </p>
                 <div class="btn-group">
-                    <a href="{% url 'accounts:signup'%}" class="cta-btn">Get Started</a>
+                    <a href="{% url 'accounts:signup_view'%}" class="cta-btn">Get Started</a>
                 </div>
             </div>
             <div class="hero-image scroll-reveal float-animation">

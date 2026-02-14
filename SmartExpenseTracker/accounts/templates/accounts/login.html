@@ -12,17 +12,18 @@
 <div class="login-wrapper">
     <div class="login-card">
 
-        <form class="login-form" id="loginForm" novalidate>
+        <form class="login-form" id="loginForm" method="post" novalidate>
+            {% csrf_token %}
             <h2>Login</h2>
 
             <div class="input-group">
-                <input type="email" id="loginEmail" placeholder=" " required>
-                <label>Email Address</label>
+                <input type="email" id="loginEmail" name="username" placeholder=" " required>
+                <label>Username</label>
                 <small class="error"></small>
             </div>
 
             <div class="input-group">
-                <input type="password" id="loginPassword" placeholder=" " required>
+                <input type="password" id="loginPassword" name="password" placeholder=" " required>
                 <label>Password</label>
                 <small class="error"></small>
             </div>
@@ -39,13 +40,53 @@
 
             <p class="signup-text">
                 Don't have an account?
-                <a href="signup.html">Sign Up</a>
+                <a href="{%url 'accounts:signup_view'%}">Sign Up</a>
             </p>
         </form>
 
     </div>
 </div>
 
-<script src="login.js"></script>
+<script>
+    const loginForm = document.getElementById("loginForm");
+const loginEmail = document.getElementById("loginEmail");
+const loginPassword = document.getElementById("loginPassword");
+
+loginForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    let isValid = true;
+
+    // Email validation
+
+    // Password validation
+    if (loginPassword.value.trim() === "") {
+        setError(loginPassword, "Password is required");
+        isValid = false;
+    } else {
+        clearError(loginPassword);
+    }
+
+    if (isValid) {
+        alert("Login validation passed! (Connect backend here)");
+        loginForm.submit();
+    }
+});
+
+function setError(input, message) {
+    const error = input.parentElement.querySelector(".error");
+    error.textContent = message;
+}
+
+function clearError(input) {
+    const error = input.parentElement.querySelector(".error");
+    error.textContent = "";
+}
+
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+</script>
 </body>
 </html>

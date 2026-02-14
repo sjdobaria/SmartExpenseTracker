@@ -1,0 +1,188 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: #0f1113;
+  color: #e0e0e0;
+}
+
+/* Topbar */
+.topbar {
+  padding: 20px 8%;
+  background: #161a1d;
+  border-bottom: 1px solid #2d3436;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.back-link {
+  color: #2ecc71;
+  text-decoration: none;
+}
+
+/* Form Container */
+.form-container {
+  padding: 40px 8%;
+  display: flex;
+  justify-content: center;
+}
+
+.transaction-form {
+  width: 100%;
+  max-width: 600px;
+  background: #1e2327;
+  border-radius: 16px;
+  padding: 30px;
+  border: 1px solid #2d3436;
+}
+
+/* Form Groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  margin-bottom: 6px;
+  color: #b2bec3;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #2d3436;
+  background: #0f1113;
+  color: #e0e0e0;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #2ecc71;
+}
+
+/* Buttons */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn.primary {
+  background: #2ecc71;
+  color: #000;
+}
+
+.btn.secondary {
+  background: transparent;
+  border: 1px solid #444;
+  color: #b2bec3;
+}
+/* ===== Reusable Sidebar (Common for All Pages) ===== */
+
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background: #0f1113;
+    color: #e0e0e0;
+}
+
+/* Sidebar Container */
+.sidebar {
+    width: 240px;
+    background: #161a1d;
+    padding: 30px 20px;
+    border-right: 1px solid #2d3436;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+/* Brand */
+.brand {
+    font-size: 22px;
+    margin-bottom: 40px;
+    color: #ffffff;
+}
+
+.brand span {
+    color: #2ecc71;
+}
+
+/* Menu Links */
+.menu a {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    color: #b2bec3;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+}
+
+/* Hover + Active */
+.menu a:hover {
+    background: rgba(46, 204, 113, 0.15);
+    color: #ffffff;
+    transform: translateX(6px);
+}
+
+.menu a.active {
+    background: #2ecc71;
+    color: #000;
+    box-shadow: inset 4px 0 0 #0f1113;
+}
+
+/* Logout Button Styling */
+.menu a.logout {
+    margin-top: 30px;
+    background: #2d3436;
+    color: #dfe6e9;
+}
+
+.menu a.logout:hover {
+    background: #e74c3c;
+    color: #fff;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    padding: 30px 40px;
+}
+
+/* Responsive: Stack Sidebar on Small Screens */
+@media (max-width: 900px) {
+    .dashboard-wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid #2d3436;
+    }
+}

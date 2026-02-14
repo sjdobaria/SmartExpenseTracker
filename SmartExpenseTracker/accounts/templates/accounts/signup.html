@@ -12,21 +12,23 @@
 <div class="signup-wrapper">
     <div class="signup-card">
 
-        <form class="signup-form" novalidate>
+        <form class="signup-form" method="post" novalidate>
+            {% csrf_token %}
+
             <h2>Create Account</h2>
 
             <div class="input-group">
-                <input type="text" placeholder=" " required>
-                <label>Full Name</label>
+                <input type="text" name="username" placeholder=" " required>
+                <label>Username</label>
             </div>
 
-            <div class="input-group">
+            {% comment %} <div class="input-group">
                 <input type="email" placeholder=" " required>
                 <label>Email Address</label>
-            </div>
+            </div> {% endcomment %}
 
             <div class="input-group">
-                <input type="password" id="password" placeholder=" " onkeyup="checkPassword()" required>
+                <input type="password" id="password" name="password1" placeholder=" " onkeyup="checkPassword()" required>
                 <label>Password</label>
             </div>
 
@@ -39,7 +41,7 @@
             </div>
 
             <div class="input-group">
-                <input type="password" id="confirm" placeholder=" " onkeyup="checkPassword()" required>
+                <input type="password" id="confirm" name="password2" placeholder=" " onkeyup="checkPassword()" required>
                 <label>Confirm Password</label>
             </div>
 
@@ -49,7 +51,7 @@
 
             <p class="login-text">
                 Already have an account?
-                <a href="{%url 'accounts:login'%}">Login</a>
+                <a href="{%url 'accounts:login_view'%}">Login</a>
             </p>
         </form>
 

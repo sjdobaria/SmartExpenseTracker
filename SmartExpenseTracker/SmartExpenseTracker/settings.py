@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'accounts',
+    'dashboard',
+    'transactions',
 ]
 
 MIDDLEWARE = [
@@ -118,3 +120,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'   # do configure static files properly for media files and static files in production
 STATICFILES_DIRS = [BASE_DIR / 'static']  # for development only, in production use STATIC_ROOT and collectstatic
+
+LOGIN_URL = 'accounts:login_view'  # URL to redirect to for login_required decorator
+LOGIN_REDIRECT_URL = 'dashboard:dashboard_view'
+LOGOUT_REDIRECT_URL = 'core:landing'
