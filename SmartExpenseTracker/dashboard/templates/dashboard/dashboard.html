@@ -1,163 +1,128 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Dashboard | Smart Expense Tracker</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{%static 'dashboard/css/dashboard.css'%}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
 </head>
 
 <body>
-<div class="dashboard-wrapper">
+    <div class="dashboard-wrapper">
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <h2 class="brand">Smart<span>Tracker</span></h2>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2 class="brand">Smart<span>Tracker</span></h2>
 
-        <nav class="menu">
-            <a href="{%url 'dashboard:dashboard_view'%}" class="active">Dashboard</a>
-            <a href="{%url 'transactions:add_transaction_view'%}">Add Transaction</a>
-            <a href="{%url 'transactions:transactions_view'%}">Transactions</a>
-            <a href="categories.html">Categories</a>
-            <a href="#" class="logout">Logout</a>
-        </nav>
-    </aside>
+            <nav class="menu">
+                <a href="{% url 'dashboard:dashboard_view' %}" class="active">Dashboard</a>
+                <a href="{% url 'transactions:add_transaction' %}">Add Transaction</a>
+                <a href="{% url 'transactions:transactions' %}">Transactions</a>
+                <a href="{% url 'accounts:logout_view' %}" class="logout">Logout</a>
+            </nav>
+        </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
+        <!-- Main Content -->
+        <main class="main-content">
 
-        <!-- Top Bar -->
-        <header class="topbar">
-            <h1>Dashboard</h1>
-            <p>Welcome back, User 👋</p>
-        </header>
+            <!-- Top Bar -->
+            <header class="topbar">
+                <h1>Dashboard</h1>
+                <p>Welcome back, {{ user.username }} 👋</p>
+            </header>
 
-        <!-- Summary Cards -->
-        <section class="summary-cards">
-            <div class="card income">
-                <h3>Total Income</h3>
-                <p>₹45,000</p>
+            <!-- Django Messages -->
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
             </div>
+            {% endif %}
 
-            <div class="card expense">
-                <h3>Total Expenses</h3>
-                <p>₹28,500</p>
-            </div>
+            <!-- Summary Cards -->
+            <section class="summary-cards">
+                <div class="card income">
+                    <h3>Total Income</h3>
+                    <p>₹{{ income_total|floatformat:2 }}</p>
+                </div>
 
-            <div class="card balance">
-                <h3>Current Balance</h3>
-                <p>₹16,500</p>
-            </div>
+                <div class="card expense">
+                    <h3>Total Expenses</h3>
+                    <p>₹{{ expense_total|floatformat:2 }}</p>
+                </div>
 
-            <div class="card savings">
-                <h3>Savings</h3>
-                <p>₹8,000</p>
-            </div>
-        </section>
+                <div class="card balance">
+                    <h3>Current Balance</h3>
+                    <p>₹{{ balance|floatformat:2 }}</p>
+                </div>
+            </section>
 
-        <!-- Charts Placeholder -->
-        <section class="charts">
-            <div class="chart-box">
-                <h3>Expense by Category</h3>
-                <div class="chart-placeholder">Pie Chart</div>
-            </div>
+            <!-- Charts Placeholder -->
+            <section class="charts">
+                <div class="chart-box">
+                    <h3>Expense by Category</h3>
+                    <div class="chart-placeholder">Pie Chart</div>
+                </div>
 
-            <div class="chart-box">
-                <h3>Monthly Trend</h3>
-                <div class="chart-placeholder">Line Chart</div>
-            </div>
-        </section>
+                <div class="chart-box">
+                    <h3>Monthly Trend</h3>
+                    <div class="chart-placeholder">Line Chart</div>
+                </div>
+            </section>
 
-        <!-- Recent Transactions -->
-        <section class="transactions">
-            <h2>Recent Transactions</h2>
+            <!-- Recent Transactions -->
+            <section class="transactions">
+                <h2>Recent Transactions</h2>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Category</th>
-                        <th>Amount</th>
-                        <th>Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>12 Feb</td>
-                        <td>Grocery Shopping</td>
-                        <td>Food</td>
-                        <td>₹1,200</td>
-                        <td class="expense-text">Expense</td>
-                    </tr>
-                    <tr>
-                        <td>10 Feb</td>
-                        <td>Salary</td>
-                        <td>Income</td>
-                        <td>₹40,000</td>
-                        <td class="income-text">Income</td>
-                    </tr>
-                    <tr>
-                        <td>08 Feb</td>
-                        <td>Uber Ride</td>
-                        <td>Transport</td>
-                        <td>₹350</td>
-                        <td class="expense-text">Expense</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for txn in recent_transactions %}
+                        <tr>
+                            <td>{{ txn.date|date:"d M Y" }}</td>
+                            <td>{{ txn.description|default:"—" }}</td>
+                            <td>{{ txn.category }}</td>
+                            <td>₹{{ txn.amount|floatformat:2 }}</td>
+                            <td
+                                class="{% if txn.transaction_type|lower == 'income' %}income-text{% else %}expense-text{% endif %}">
+                                {{ txn.transaction_type }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #636e72;">No transactions yet. Add your
+                                first one!</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
 
-    </main>
-</div>
-
-{% comment %} <!-- Add Transaction Modal -->
-<div class="modal" id="transactionModal">
-    <div class="modal-content">
-        <h3>Add Transaction</h3>
-
-        <input type="text" placeholder="Description">
-        <input type="number" placeholder="Amount">
-        <select>
-            <option>Food</option>
-            <option>Transport</option>
-            <option>Shopping</option>
-            <option>Bills</option>
-        </select>
-
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-            <button class="btn-save">Save</button>
-        </div>
+        </main>
     </div>
-</div> {% endcomment %}
-<script>
-    // Sidebar active state
-    document.querySelectorAll(".menu a").forEach(link => {
-        link.addEventListener("click", function () {
-            document.querySelectorAll(".menu a").forEach(l => l.classList.remove("active"));
-            this.classList.add("active");
 
-            if (this.textContent.includes("Add Transaction")) {
-                openModal();
-            }
-        });
-    });
-
-    function openModal() {
-        document.getElementById("transactionModal").style.display = "flex";
-    }
-
-    function closeModal() {
-        document.getElementById("transactionModal").style.display = "none";
-    }
-
-    // Close modal when clicking outside
-    document.getElementById("transactionModal").addEventListener("click", function (e) {
-        if (e.target === this) closeModal();
-    });
-</script>
+    <script>
+        // Auto-dismiss alerts after 3 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 3000);
+    </script>
 
 </body>
+
 </html>

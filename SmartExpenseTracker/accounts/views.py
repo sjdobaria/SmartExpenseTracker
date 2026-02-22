@@ -42,6 +42,6 @@ def login_view(request):
     return render(request, "accounts/login.html")
 
 
-# def logout_view(request):
-#     logout(request)
-#     return redirect("core:landing")
+def logout_view(request):
+    logout(request)
+    return redirect("core:landing")

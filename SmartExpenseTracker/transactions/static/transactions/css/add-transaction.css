@@ -98,91 +98,116 @@ body {
   border: 1px solid #444;
   color: #b2bec3;
 }
+
 /* ===== Reusable Sidebar (Common for All Pages) ===== */
 
 .dashboard-wrapper {
-    display: flex;
-    min-height: 100vh;
-    background: #0f1113;
-    color: #e0e0e0;
+  display: flex;
+  min-height: 100vh;
+  background: #0f1113;
+  color: #e0e0e0;
 }
 
 /* Sidebar Container */
 .sidebar {
-    width: 240px;
-    background: #161a1d;
-    padding: 30px 20px;
-    border-right: 1px solid #2d3436;
-    position: sticky;
-    top: 0;
-    height: 100vh;
+  width: 240px;
+  background: #161a1d;
+  padding: 30px 20px;
+  border-right: 1px solid #2d3436;
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
 
 /* Brand */
 .brand {
-    font-size: 22px;
-    margin-bottom: 40px;
-    color: #ffffff;
+  font-size: 22px;
+  margin-bottom: 40px;
+  color: #ffffff;
 }
 
 .brand span {
-    color: #2ecc71;
+  color: #2ecc71;
 }
 
 /* Menu Links */
 .menu a {
-    display: flex;
-    align-items: center;
-    padding: 12px 15px;
-    margin-bottom: 10px;
-    color: #b2bec3;
-    text-decoration: none;
-    border-radius: 8px;
-    transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  color: #b2bec3;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.25s ease;
 }
 
 /* Hover + Active */
 .menu a:hover {
-    background: rgba(46, 204, 113, 0.15);
-    color: #ffffff;
-    transform: translateX(6px);
+  background: rgba(46, 204, 113, 0.15);
+  color: #ffffff;
+  transform: translateX(6px);
 }
 
 .menu a.active {
-    background: #2ecc71;
-    color: #000;
-    box-shadow: inset 4px 0 0 #0f1113;
+  background: #2ecc71;
+  color: #000;
+  box-shadow: inset 4px 0 0 #0f1113;
 }
 
 /* Logout Button Styling */
 .menu a.logout {
-    margin-top: 30px;
-    background: #2d3436;
-    color: #dfe6e9;
+  margin-top: 30px;
+  background: #2d3436;
+  color: #dfe6e9;
 }
 
 .menu a.logout:hover {
-    background: #e74c3c;
-    color: #fff;
+  background: #e74c3c;
+  color: #fff;
 }
 
 /* Main Content Area */
 .main-content {
-    flex: 1;
-    padding: 30px 40px;
+  flex: 1;
+  padding: 30px 40px;
 }
 
 /* Responsive: Stack Sidebar on Small Screens */
 @media (max-width: 900px) {
-    .dashboard-wrapper {
-        flex-direction: column;
-    }
+  .dashboard-wrapper {
+    flex-direction: column;
+  }
 
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        border-right: none;
-        border-bottom: 1px solid #2d3436;
-    }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid #2d3436;
+  }
+}
+
+/* Django Messages */
+.messages {
+  margin: 15px 0;
+}
+
+.alert {
+  padding: 12px 18px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.alert-success {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.alert-error {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.3);
 }

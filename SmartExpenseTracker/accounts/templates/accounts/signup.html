@@ -1,82 +1,93 @@
 {%load static%}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account | SmartTracker</title>
-    <link rel="stylesheet" href="{%static 'accounts/css/signup.css'%}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account | SmartTracker</title>
+  <link rel="stylesheet" href="{%static 'accounts/css/signup.css'%}">
 </head>
+
 <body>
 
-<div class="signup-wrapper">
+  <div class="signup-wrapper">
     <div class="signup-card">
 
-        <form class="signup-form" method="post" novalidate>
-            {% csrf_token %}
+      <form class="signup-form" method="post" novalidate>
+        {% csrf_token %}
 
-            <h2>Create Account</h2>
+        <h2>Create Account</h2>
 
-            <div class="input-group">
-                <input type="text" name="username" placeholder=" " required>
-                <label>Username</label>
-            </div>
+        {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
 
-            {% comment %} <div class="input-group">
+        <div class="input-group">
+          <input type="text" name="username" placeholder=" " required>
+          <label>Username</label>
+        </div>
+
+        <!-- <div class="input-group">
                 <input type="email" placeholder=" " required>
                 <label>Email Address</label>
-            </div> {% endcomment %}
+            </div>  -->
 
-            <div class="input-group">
-                <input type="password" id="password" name="password1" placeholder=" " onkeyup="checkPassword()" required>
-                <label>Password</label>
-            </div>
+        <div class="input-group">
+          <input type="password" id="password" name="password1" placeholder=" " onkeyup="checkPassword()" required>
+          <label>Password</label>
+        </div>
 
-            <div class="rules">
-                <p id="len">• Minimum 8 characters</p>
-                <p id="upper">• Uppercase letter</p>
-                <p id="lower">• Lowercase letter</p>
-                <p id="num">• Number</p>
-                <p id="special">• Special character (!@#$%^&*)</p>
-            </div>
+        <div class="rules">
+          <p id="len">• Minimum 8 characters</p>
+          <p id="upper">• Uppercase letter</p>
+          <p id="lower">• Lowercase letter</p>
+          <p id="num">• Number</p>
+          <p id="special">• Special character (!@#$%^&*)</p>
+        </div>
 
-            <div class="input-group">
-                <input type="password" id="confirm" name="password2" placeholder=" " onkeyup="checkPassword()" required>
-                <label>Confirm Password</label>
-            </div>
+        <div class="input-group">
+          <input type="password" id="confirm" name="password2" placeholder=" " onkeyup="checkPassword()" required>
+          <label>Confirm Password</label>
+        </div>
 
-            <p id="match" style="margin-top: 10px;">• Passwords match</p>
-            <br>
-            <button type="submit" class="signup-btn">Sign Up</button>
+        <p id="match" style="margin-top: 10px;">• Passwords match</p>
+        <br>
+        <button type="submit" class="signup-btn">Sign Up</button>
 
-            <p class="login-text">
-                Already have an account?
-                <a href="{%url 'accounts:login_view'%}">Login</a>
-            </p>
-        </form>
+        <p class="login-text">
+          Already have an account?
+          <a href="{%url 'accounts:login_view'%}">Login</a>
+        </p>
+      </form>
 
     </div>
-</div>
+  </div>
 
-<script>
-function checkPassword() {
-  let pwd = document.getElementById("password").value;
-  let confirm = document.getElementById("confirm").value;
+  <script>
+    function checkPassword() {
+      let pwd = document.getElementById("password").value;
+      let confirm = document.getElementById("confirm").value;
 
-  document.getElementById("len").style.color =
-    pwd.length >= 8 ? "#2ecc71" : "#e74c3c";
-  document.getElementById("upper").style.color =
-    /[A-Z]/.test(pwd) ? "#2ecc71" : "#e74c3c";
-  document.getElementById("lower").style.color =
-    /[a-z]/.test(pwd) ? "#2ecc71" : "#e74c3c";
-  document.getElementById("num").style.color =
-    /[0-9]/.test(pwd) ? "#2ecc71" : "#e74c3c";
-  document.getElementById("special").style.color =
-    /[!@#$%^&*]/.test(pwd) ? "#2ecc71" : "#e74c3c";
-  document.getElementById("match").style.color =
-    pwd === confirm && pwd !== "" ? "#2ecc71" : "#e74c3c";
-}
-</script>
+      document.getElementById("len").style.color =
+        pwd.length >= 8 ? "#2ecc71" : "#e74c3c";
+      document.getElementById("upper").style.color =
+        /[A-Z]/.test(pwd) ? "#2ecc71" : "#e74c3c";
+      document.getElementById("lower").style.color =
+        /[a-z]/.test(pwd) ? "#2ecc71" : "#e74c3c";
+      document.getElementById("num").style.color =
+        /[0-9]/.test(pwd) ? "#2ecc71" : "#e74c3c";
+      document.getElementById("special").style.color =
+        /[!@#$%^&*]/.test(pwd) ? "#2ecc71" : "#e74c3c";
+      document.getElementById("match").style.color =
+        pwd === confirm && pwd !== "" ? "#2ecc71" : "#e74c3c";
+    }
+  </script>
 
 </body>
+
 </html>

@@ -96,10 +96,21 @@ body {
     font-weight: bold;
 }
 
-.income p { color: #2ecc71; }
-.expense p { color: #e74c3c; }
-.balance p { color: #3498db; }
-.savings p { color: #f1c40f; }
+.income p {
+    color: #2ecc71;
+}
+
+.expense p {
+    color: #e74c3c;
+}
+
+.balance p {
+    color: #3498db;
+}
+
+.savings p {
+    color: #f1c40f;
+}
 
 /* Charts */
 .charts {
@@ -140,7 +151,8 @@ table {
     overflow: hidden;
 }
 
-th, td {
+th,
+td {
     padding: 15px;
     text-align: left;
 }
@@ -175,11 +187,12 @@ tbody tr:hover {
         width: 100%;
     }
 }
+
 /* Modal */
 .modal {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     display: none;
     align-items: center;
     justify-content: center;
@@ -235,8 +248,15 @@ tbody tr:hover {
 }
 
 @keyframes scaleIn {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* Smooth transitions for interactive elements */
@@ -259,20 +279,22 @@ tbody tr {
     color: #000;
     box-shadow: inset 4px 0 0 #0f1113;
 }
+
 .menu a.logout:hover {
-  background: #e74c3c;
-  color: #fff;
+    background: #e74c3c;
+    color: #fff;
 }
+
 /* Cards hover animation */
 .card:hover {
     transform: translateY(-6px) scale(1.01);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
 }
 
 /* Charts hover */
 .chart-box:hover {
     transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
 }
 
 /* Table row hover */
@@ -286,6 +308,38 @@ tbody tr:hover {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Django Messages */
+.messages {
+    margin: 15px 0;
+}
+
+.alert {
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.alert-success {
+    background: rgba(46, 204, 113, 0.15);
+    color: #2ecc71;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.alert-error {
+    background: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
 }

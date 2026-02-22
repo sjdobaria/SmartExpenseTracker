@@ -1,92 +1,102 @@
 {%load static%}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | SmartTracker</title>
     <link rel="stylesheet" href="{%static 'accounts/css/login.css'%}">
 </head>
+
 <body>
 
-<div class="login-wrapper">
-    <div class="login-card">
+    <div class="login-wrapper">
+        <div class="login-card">
 
-        <form class="login-form" id="loginForm" method="post" novalidate>
-            {% csrf_token %}
-            <h2>Login</h2>
+            <form class="login-form" id="loginForm" method="post" novalidate>
+                {% csrf_token %}
+                <h2>Login</h2>
 
-            <div class="input-group">
-                <input type="email" id="loginEmail" name="username" placeholder=" " required>
-                <label>Username</label>
-                <small class="error"></small>
-            </div>
+                {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="input-group">
+                    <input id="username" name="username" placeholder=" " required>
+                    <label>Username</label>
+                    <small class="error"></small>
+                </div>
 
-            <div class="input-group">
-                <input type="password" id="loginPassword" name="password" placeholder=" " required>
-                <label>Password</label>
-                <small class="error"></small>
-            </div>
+                <div class="input-group">
+                    <input type="password" id="loginPassword" name="password" placeholder=" " required>
+                    <label>Password</label>
+                    <small class="error"></small>
+                </div>
 
-            <div class="form-options">
-                <!-- <label class="remember-me">
+                <div class="form-options">
+                    <!-- <label class="remember-me">
                     <input type="checkbox">
                     Remember me
                 </label> -->
-                <a href="#" class="forgot-link">Forgot password?</a>
-            </div>
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
 
-            <button type="submit" class="login-btn">Login</button>
+                <button type="submit" class="login-btn">Login</button>
 
-            <p class="signup-text">
-                Don't have an account?
-                <a href="{%url 'accounts:signup_view'%}">Sign Up</a>
-            </p>
-        </form>
+                <p class="signup-text">
+                    Don't have an account?
+                    <a href="{%url 'accounts:signup_view'%}">Sign Up</a>
+                </p>
+            </form>
 
+        </div>
     </div>
-</div>
 
-<script>
-    const loginForm = document.getElementById("loginForm");
-const loginEmail = document.getElementById("loginEmail");
-const loginPassword = document.getElementById("loginPassword");
+    <script>
+        const loginForm = document.getElementById("loginForm");
+        const loginEmail = document.getElementById("loginEmail");
+        const loginPassword = document.getElementById("loginPassword");
 
-loginForm.addEventListener("submit", function (e) {
-    e.preventDefault();
+        loginForm.addEventListener("submit", function (e) {
+            e.preventDefault();
 
-    let isValid = true;
+            let isValid = true;
 
-    // Email validation
+            // Email validation
 
-    // Password validation
-    if (loginPassword.value.trim() === "") {
-        setError(loginPassword, "Password is required");
-        isValid = false;
-    } else {
-        clearError(loginPassword);
-    }
+            // Password validation
+            if (loginPassword.value.trim() === "") {
+                setError(loginPassword, "Password is required");
+                isValid = false;
+            } else {
+                clearError(loginPassword);
+            }
 
-    if (isValid) {
-        alert("Login validation passed! (Connect backend here)");
-        loginForm.submit();
-    }
-});
+            if (isValid) {
 
-function setError(input, message) {
-    const error = input.parentElement.querySelector(".error");
-    error.textContent = message;
-}
+                loginForm.submit();
+            }
+        });
 
-function clearError(input) {
-    const error = input.parentElement.querySelector(".error");
-    error.textContent = "";
-}
+        function setError(input, message) {
+            const error = input.parentElement.querySelector(".error");
+            error.textContent = message;
+        }
 
-function validateEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+        function clearError(input) {
+            const error = input.parentElement.querySelector(".error");
+            error.textContent = "";
+        }
 
-</script>
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+    </script>
 </body>
+
 </html>
