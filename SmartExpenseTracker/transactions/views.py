@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Expense, Category
 from django.contrib import messages
 from datetime import date, timedelta
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Q
 from django.db.models.functions import TruncMonth, TruncDate
 from .mongo import get_transactions_collection
 
@@ -81,29 +81,38 @@ def transactions_view(request):
     qs = Expense.objects.filter(user=user).order_by("-date", "-created_at")
 
     # --- Filters ---
+    search_query = request.GET.get("q", "").strip()
     filter_category = request.GET.get("category", "")
     filter_type = request.GET.get("type", "")
-    filter_month = request.GET.get("month", "")
+    filter_from = request.GET.get("from", "")
+    filter_to = request.GET.get("to", "")
 
+    if search_query:
+        qs = qs.filter(
+            Q(description__icontains=search_query) |
+            Q(category__icontains=search_query) |
+            Q(payment_mode__icontains=search_query)
+        )
     if filter_category:
         qs = qs.filter(category=filter_category)
     if filter_type:
         qs = qs.filter(transaction_type__iexact=filter_type)
-    if filter_month:
-        try:
-            year, month = filter_month.split("-")
-            qs = qs.filter(date__year=int(year), date__month=int(month))
-        except ValueError:
-            pass
+    if filter_from:
+        qs = qs.filter(date__gte=filter_from)
+    if filter_to:
+        qs = qs.filter(date__lte=filter_to)
 
     # Load user categories for the filter dropdown
     all_categories = Category.objects.filter(user=user).values_list("name", flat=True).distinct()
 
     context = {
         "transactions": qs,
+        "result_count": qs.count(),
+        "search_query": search_query,
         "filter_category": filter_category,
         "filter_type": filter_type,
-        "filter_month": filter_month,
+        "filter_from": filter_from,
+        "filter_to": filter_to,
         "all_categories": all_categories,
     }
     return render(request, "transactions/transactions.html", context)

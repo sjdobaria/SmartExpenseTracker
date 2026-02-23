@@ -236,21 +236,138 @@ tbody tr:hover {
   }
 }
 
-/* Filter Form */
-.filter-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+/* Filter Form Row Logic */
+.filter-group-row {
+  display: flex;
+  flex-wrap: wrap;
   gap: 15px;
+  align-items: flex-end;
   width: 100%;
 }
 
-.filter-group .btn {
-  margin-top: 20px;
+.search-group {
+  flex: 2;
+  min-width: 250px;
 }
 
-/* Django Messages */
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-group.actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.result-badge {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+/* Adjustments for inputs focus */
+.filter-group input:focus,
+.filter-group select:focus {
+  border-color: #2ecc71;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
+}
+
+/* Flatpickr Dark Theme (Matches Other Pages) */
+.filter-group input[readonly] {
+  cursor: pointer;
+}
+
+.flatpickr-calendar {
+  background: #1e2327 !important;
+  border: 1px solid #2d3436 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 12px !important;
+}
+
+.flatpickr-months .flatpickr-month,
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+  background: #1e2327 !important;
+  color: #e0e0e0 !important;
+}
+
+.flatpickr-day {
+  color: #e0e0e0 !important;
+  border-radius: 6px !important;
+}
+
+.flatpickr-day:hover {
+  background: rgba(46, 204, 113, 0.2) !important;
+  border-color: transparent !important;
+}
+
+.flatpickr-day.selected {
+  background: #2ecc71 !important;
+  border-color: #2ecc71 !important;
+  color: #000 !important;
+}
+
+.flatpickr-day.today {
+  border-color: #2ecc71 !important;
+}
+
+.flatpickr-day.flatpickr-disabled {
+  color: #555 !important;
+}
+
+.flatpickr-weekday {
+  color: #b2bec3 !important;
+}
+
+span.flatpickr-weekday {
+  background: #1e2327 !important;
+}
+
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+  fill: #2ecc71 !important;
+  color: #2ecc71 !important;
+}
+
+.flatpickr-current-month input.cur-year {
+  color: #e0e0e0 !important;
+}
+
+/* Responsive fixes */
+@media (max-width: 600px) {
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .filter-group-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-group {
+    flex: none;
+    width: 100%;
+  }
+}
+
+/* Django Messages (Restored) */
 .messages {
-  padding: 0 8%;
   margin: 15px 0;
 }
 
@@ -259,6 +376,19 @@ tbody tr:hover {
   border-radius: 8px;
   margin-bottom: 10px;
   font-size: 0.9rem;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .alert-success {
@@ -273,7 +403,7 @@ tbody tr:hover {
   border: 1px solid rgba(231, 76, 60, 0.3);
 }
 
-/* Delete button as link */
+/* Action button fix */
 a.action-btn.delete {
   text-decoration: none;
   display: inline-block;
