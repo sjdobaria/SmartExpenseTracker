@@ -3,119 +3,170 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Edit Transaction | SmartTracker</title>
-    <link rel="stylesheet" href="{% static 'transactions/css/add-transaction.css' %}" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Transaction | SmartTracker</title>
+  <link rel="stylesheet" href="{% static 'transactions/css/add-transaction.css' %}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css" />
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 
 <body>
-    <div class="dashboard-wrapper">
-        <aside class="sidebar">
-            <h2 class="brand">Smart<span>Tracker</span></h2>
-            <nav class="menu">
-                <a href="{% url 'dashboard:dashboard_view' %}">Dashboard</a>
-                <a href="{% url 'transactions:add_transaction' %}">Add Transaction</a>
-                <a href="{% url 'transactions:transactions' %}">Transactions</a>
-                <a href="{% url 'accounts:logout_view' %}" class="logout">Logout</a>
-            </nav>
-        </aside>
+  <div class="dashboard-wrapper">
+    <aside class="sidebar">
+      <h2 class="brand">Smart<span>Tracker</span></h2>
+      <nav class="menu">
+        <a href="{% url 'dashboard:dashboard_view' %}">Dashboard</a>
+        <a href="{% url 'transactions:add_transaction' %}">Add Transaction</a>
+        <a href="{% url 'transactions:transactions' %}">Transactions</a>
+        <a href="{% url 'transactions:categories' %}">Categories</a>
+        <a href="{% url 'accounts:logout_view' %}" class="logout">Logout</a>
+      </nav>
+    </aside>
 
-        <main class="main-content">
-            <header class="topbar">
-                <h1>Edit Transaction</h1>
-                <a href="{% url 'transactions:transactions' %}" class="back-link">Back</a>
-            </header>
+    <main class="main-content">
+      <header class="topbar">
+        <h1>Edit Transaction</h1>
+        <a href="{% url 'transactions:transactions' %}" class="back-link">Back</a>
+      </header>
 
-            {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-            {% endif %}
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
 
-            <section class="form-container">
-                <form class="transaction-form" method="POST">
-                    {% csrf_token %}
+      <section class="form-container">
+        <form class="transaction-form" method="POST">
+          {% csrf_token %}
 
-                    <div class="form-group">
-                        <label for="type">Transaction Type</label>
-                        <select id="type" name="type" required>
-                            <option value="">Select type</option>
-                            <option value="income" {% if expense.transaction_type|lower == "income" %} selected {% endif %}>Income</option>
-                            <option value="expense" {% if expense.transaction_type|lower == "expense" %} selected {% endif %}>Expense</option>
-                        </select>
-                    </div>
+          <div class="form-group">
+            <label for="type">Transaction Type</label>
+            <select id="type" name="type" required onchange="filterCategories()">
+              <option value="">Select type</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+          </div>
 
-                    <div class="form-group">
-                        <label for="amount">Amount</label>
-                        <input type="number" id="amount" name="amount" value="{{ expense.amount }}" required />
-                    </div>
+          <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" id="amount" name="amount"
+              value="{{ expense.amount }}" min="0.01" step="0.01" required />
+          </div>
 
-                    <div class="form-group">
-                        <label for="category">Category</label>
-                        <select id="category" name="category" required>
-                            <option value="">Select category</option>
-                            <option value="Food" {% if expense.category == "Food" %} selected {% endif %}>Food</option>
-                            <option value="Transport" {% if expense.category == "Transport" %} selected {% endif %}>
-                                Transport</option>
-                            <option value="Shopping" {% if expense.category == "Shopping" %} selected {% endif %}>Shopping
-                            </option>
-                            <option value="Bills" {% if expense.category == "Bills" %} selected {% endif %}>Bills</option>
-                            <option value="Entertainment" {% if expense.category == "Entertainment" %} selected {% endif %}>Entertainment</option>
-                            <option value="Salary" {% if expense.category == "Salary" %} selected {% endif %}>Salary
-                            </option>
-                            <option value="Travel" {% if expense.category == "Travel" %} selected {% endif %}>Travel
-                            </option>
-                            <option value="Rent" {% if expense.category == "Rent" %} selected {% endif %}>Rent</option>
-                        </select>
-                    </div>
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+              <option value="">Select category</option>
+              {% for cat in expense_categories %}
+              <option value="{{ cat.name }}" class="expense-cat">{{ cat.name }}</option>
+              {% endfor %}
+              {% for cat in income_categories %}
+              <option value="{{ cat.name }}" class="income-cat">{{ cat.name }}</option>
+              {% endfor %}
+            </select>
+            <a href="{% url 'transactions:categories' %}" class="manage-link">Manage categories</a>
+          </div>
 
-                    <div class="form-group">
-                        <label for="date">Date</label>
-                        <input type="date" id="date" name="date" value="{{ expense.date|date:'Y-m-d' }}" required />
-                    </div>
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input type="text" id="date" name="date"
+              value="{{ expense.date|date:'Y-m-d' }}" placeholder="Select date" required readonly />
+          </div>
 
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea id="description" name="description" rows="3"
-                            placeholder="Optional note...">{{ expense.description }}</textarea>
-                    </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description"
+              rows="3" placeholder="Optional note...">{{ expense.description }}</textarea>
+          </div>
 
-                    <div class="form-group">
-                        <label for="payment">Payment Mode</label>
-                        <select id="payment" name="payment">
-                            <option value="Cash" {% if expense.payment_mode == "Cash" %} selected {% endif %}>Cash
-                            </option>
-                            <option value="UPI" {% if expense.payment_mode == "UPI" %} selected {% endif %}>UPI</option>
-                            <option value="Debit Card" {% if expense.payment_mode == "Debit Card" %} selected {% endif %}>
-                                Debit Card</option>
-                            <option value="Credit Card" {% if expense.payment_mode == "Credit Card" %} selected {% endif %}>Credit Card</option>
-                            <option value="Net Banking" {% if expense.payment_mode == "Net Banking" %} selected {% endif %}>Net Banking</option>
-                        </select>
-                    </div>
+          <div class="form-group">
+            <label for="payment">Payment Mode</label>
+            <select id="payment" name="payment">
+              <option value="Cash">Cash</option>
+              <option value="UPI">UPI</option>
+              <option value="Debit Card">Debit Card</option>
+              <option value="Credit Card">Credit Card</option>
+              <option value="Net Banking">Net Banking</option>
+            </select>
+          </div>
 
-                    <div class="actions">
-                        <a href="{% url 'transactions:transactions' %}" class="btn secondary">Cancel</a>
-                        <button type="submit" class="btn primary">Update Transaction</button>
-                    </div>
+          <div class="actions">
+            <a href="{% url 'transactions:transactions' %}" class="btn secondary">Cancel</a>
+            <button type="submit" class="btn primary">Update Transaction</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
 
-                </form>
-            </section>
-        </main>
-    </div>
+  <script>
+    // Pre-fill values from the existing transaction
+    var currentType = "{{ expense.transaction_type|lower }}";
+    var currentCategory = "{{ expense.category }}";
+    var currentPayment = "{{ expense.payment_mode }}";
 
-    <script>
-        setTimeout(function () {
-            var alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function (el) {
-                el.style.transition = 'opacity 0.5s ease';
-                el.style.opacity = '0';
-                setTimeout(function () { el.remove(); }, 500);
-            });
-        }, 3000);
-    </script>
+    // Set transaction type
+    document.getElementById('type').value = currentType;
+
+    // Filter and set category
+    function filterCategories() {
+      var type = document.getElementById('type').value;
+      var catSelect = document.getElementById('category');
+      var options = catSelect.querySelectorAll('option');
+
+      options.forEach(function(opt) {
+        if (opt.value === '') {
+          opt.textContent = type ? 'Select category' : 'Select type first';
+          opt.style.display = '';
+        } else if (opt.classList.contains('expense-cat')) {
+          opt.style.display = (type === 'expense') ? '' : 'none';
+        } else if (opt.classList.contains('income-cat')) {
+          opt.style.display = (type === 'income') ? '' : 'none';
+        }
+      });
+    }
+
+    // Initialize: filter categories then set current value
+    filterCategories();
+    document.getElementById('category').value = currentCategory;
+
+    // Set payment mode
+    document.getElementById('payment').value = currentPayment;
+
+    // Flatpickr
+    flatpickr("#date", {
+      dateFormat: "Y-m-d",
+      maxDate: "today",
+      disableMobile: true,
+      animate: true,
+      theme: "dark",
+      defaultDate: "{{ expense.date|date:'Y-m-d' }}",
+    });
+
+    // Amount validation
+    var amountInput = document.getElementById('amount');
+    amountInput.addEventListener('input', function () {
+      if (parseFloat(this.value) <= 0) {
+        this.setCustomValidity('Amount must be greater than 0');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+
+    // Auto-dismiss alerts
+    setTimeout(function () {
+      document.querySelectorAll('.alert').forEach(function (el) {
+        el.style.transition = 'opacity 0.5s ease';
+        el.style.opacity = '0';
+        setTimeout(function () { el.remove(); }, 500);
+      });
+    }, 3000);
+  </script>
 </body>
 
 </html>

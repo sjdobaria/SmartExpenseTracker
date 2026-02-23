@@ -7,6 +7,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Add Transaction | SmartTracker</title>
   <link rel="stylesheet" href="{% static 'transactions/css/add-transaction.css'%}" />
+  <!-- Flatpickr Calendar -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css" />
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 
 <body>
@@ -21,6 +25,7 @@
         <a href="{% url 'dashboard:dashboard_view' %}">Dashboard</a>
         <a href="{% url 'transactions:add_transaction' %}" class="active">Add Transaction</a>
         <a href="{% url 'transactions:transactions' %}">Transactions</a>
+        <a href="{% url 'transactions:categories' %}">Categories</a>
         <a href="{% url 'accounts:logout_view' %}" class="logout">Logout</a>
       </nav>
     </aside>
@@ -49,7 +54,7 @@
 
           <div class="form-group">
             <label for="type">Transaction Type</label>
-            <select id="type" name="type" required>
+            <select id="type" name="type" required onchange="filterCategories()">
               <option value="">Select type</option>
               <option value="income">Income</option>
               <option value="expense">Expense</option>
@@ -58,25 +63,26 @@
 
           <div class="form-group">
             <label for="amount">Amount (₹)</label>
-            <input type="number" id="amount" name="amount" placeholder="Enter amount" required />
+            <input type="number" id="amount" name="amount" placeholder="Enter amount" min="0.01" step="0.01" required />
           </div>
 
           <div class="form-group">
             <label for="category">Category</label>
             <select id="category" name="category" required>
-              <option value="">Select category</option>
-              <option>Food</option>
-              <option>Transport</option>
-              <option>Shopping</option>
-              <option>Bills</option>
-              <option>Entertainment</option>
-              <option>Salary</option>
+              <option value="">Select type first</option>
+              {% for cat in expense_categories %}
+              <option value="{{ cat.name }}" class="expense-cat" style="display:none;">{{ cat.name }}</option>
+              {% endfor %}
+              {% for cat in income_categories %}
+              <option value="{{ cat.name }}" class="income-cat" style="display:none;">{{ cat.name }}</option>
+              {% endfor %}
             </select>
+            <a href="{% url 'transactions:categories' %}" class="manage-link">Manage categories</a>
           </div>
 
           <div class="form-group">
             <label for="date">Date</label>
-            <input type="date" id="date" name="date" required />
+            <input type="text" id="date" name="date" placeholder="Select date" required readonly />
           </div>
 
           <div class="form-group">
@@ -108,11 +114,50 @@
   </div>
 
   <script>
-    setTimeout(() => {
-      document.querySelectorAll('.alert').forEach(alert => {
-        alert.style.transition = 'opacity 0.5s ease';
-        alert.style.opacity = '0';
-        setTimeout(() => alert.remove(), 500);
+    // Initialize Flatpickr calendar on date input
+    flatpickr("#date", {
+      dateFormat: "Y-m-d",
+      maxDate: "today",
+      disableMobile: true,
+      animate: true,
+      theme: "dark",
+    });
+
+    // Filter categories based on transaction type
+    function filterCategories() {
+      var type = document.getElementById('type').value;
+      var catSelect = document.getElementById('category');
+      var options = catSelect.querySelectorAll('option');
+      catSelect.value = '';
+
+      options.forEach(function(opt) {
+        if (opt.value === '') {
+          opt.textContent = type ? 'Select category' : 'Select type first';
+          opt.style.display = '';
+        } else if (opt.classList.contains('expense-cat')) {
+          opt.style.display = (type === 'expense') ? '' : 'none';
+        } else if (opt.classList.contains('income-cat')) {
+          opt.style.display = (type === 'income') ? '' : 'none';
+        }
+      });
+    }
+
+    // Client-side amount validation
+    var amountInput = document.getElementById('amount');
+    amountInput.addEventListener('input', function () {
+      if (parseFloat(this.value) <= 0) {
+        this.setCustomValidity('Amount must be greater than 0');
+      } else {
+        this.setCustomValidity('');
+      }
+    });
+
+    // Auto-dismiss alerts
+    setTimeout(function() {
+      document.querySelectorAll('.alert').forEach(function(el) {
+        el.style.transition = 'opacity 0.5s ease';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 500);
       });
     }, 3000);
   </script>

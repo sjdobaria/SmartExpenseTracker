@@ -8,4 +8,7 @@ urlpatterns = [
     path('transactions_history/', views.transactions_view, name='transactions'),
     path('edit/<int:pk>/', views.edit_expense, name='edit_transaction'),
     path('delete/<int:pk>/', views.delete_expense, name='delete_transaction'),
+    path('categories/', views.categories_view, name='categories'),
+    path('categories/edit/<int:pk>/', views.edit_category, name='edit_category'),
+    path('categories/delete/<int:pk>/', views.delete_category, name='delete_category'),
 ]

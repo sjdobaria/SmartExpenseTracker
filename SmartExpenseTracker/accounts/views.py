@@ -2,6 +2,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from transactions.models import Category
+
+DEFAULT_CATEGORIES = {
+    "expense": ["Food", "Transport", "Shopping", "Bills", "Entertainment", "Rent", "Travel", "Health", "Education"],
+    "income": ["Salary", "Freelance", "Bonus", "Investment", "Gift"],
+}
 
 def signup_view(request):
     if request.method == "POST":
@@ -21,7 +27,15 @@ def signup_view(request):
             messages.error(request, "Username already taken.")
             return redirect("accounts:signup_view")
 
-        User.objects.create_user(username=username, password=password1)
+        user = User.objects.create_user(username=username, password=password1)
+
+        # Seed default categories for the new user
+        for cat_type, names in DEFAULT_CATEGORIES.items():
+            Category.objects.bulk_create([
+                Category(user=user, name=name, type=cat_type)
+                for name in names
+            ])
+
         messages.success(request, "Account created successfully. Please login.")
         return redirect("accounts:login_view")
     return render(request, "accounts/signup.html")
