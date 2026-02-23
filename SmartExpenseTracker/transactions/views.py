@@ -1,8 +1,11 @@
+import json
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Expense, Category
 from django.contrib import messages
-from datetime import date
+from datetime import date, timedelta
+from django.db.models import Sum, Count
+from django.db.models.functions import TruncMonth, TruncDate
 from .mongo import get_transactions_collection
 
 
@@ -269,3 +272,141 @@ def delete_category(request, pk):
     category.delete()
     messages.success(request, f'Category "{name}" deleted!')
     return redirect("transactions:categories")
+
+
+# ──────────────────────────────────────────────────
+#  REPORTS & ANALYTICS
+# ──────────────────────────────────────────────────
+@login_required
+def reports_view(request):
+    user = request.user
+
+    # ── Filters ──
+    filter_from = request.GET.get("from", "")
+    filter_to = request.GET.get("to", "")
+    filter_category = request.GET.get("category", "")
+
+    qs = Expense.objects.filter(user=user)
+
+    if filter_from:
+        qs = qs.filter(date__gte=filter_from)
+    if filter_to:
+        qs = qs.filter(date__lte=filter_to)
+    if filter_category:
+        qs = qs.filter(category=filter_category)
+
+    # ── Summary totals ──
+    total_income = qs.filter(transaction_type__iexact="income").aggregate(t=Sum("amount"))["t"] or 0
+    total_expense = qs.filter(transaction_type__iexact="expense").aggregate(t=Sum("amount"))["t"] or 0
+    net_savings = float(total_income) - float(total_expense)
+    txn_count = qs.count()
+
+    # ── Pie: Category-wise expense breakdown ──
+    cat_data = (
+        qs.filter(transaction_type__iexact="expense")
+        .values("category")
+        .annotate(total=Sum("amount"))
+        .order_by("-total")
+    )
+    pie_labels = [d["category"] for d in cat_data]
+    pie_values = [float(d["total"]) for d in cat_data]
+
+    # ── Bar: Monthly income vs expense ──
+    monthly_income = (
+        qs.filter(transaction_type__iexact="income")
+        .annotate(month=TruncMonth("date"))
+        .values("month")
+        .annotate(total=Sum("amount"))
+        .order_by("month")
+    )
+    monthly_expense = (
+        qs.filter(transaction_type__iexact="expense")
+        .annotate(month=TruncMonth("date"))
+        .values("month")
+        .annotate(total=Sum("amount"))
+        .order_by("month")
+    )
+
+    all_months = set()
+    inc_map = {}
+    exp_map = {}
+
+    for item in monthly_income:
+        label = item["month"].strftime("%b %Y")
+        inc_map[label] = float(item["total"])
+        all_months.add(item["month"])
+
+    for item in monthly_expense:
+        label = item["month"].strftime("%b %Y")
+        exp_map[label] = float(item["total"])
+        all_months.add(item["month"])
+
+    sorted_months = sorted(all_months)[-12:]
+    bar_labels = [m.strftime("%b %Y") for m in sorted_months]
+    bar_income = [inc_map.get(l, 0) for l in bar_labels]
+    bar_expense = [exp_map.get(l, 0) for l in bar_labels]
+
+    # ── Line: Daily spending trend (last 30 days) ──
+    thirty_days_ago = date.today() - timedelta(days=30)
+    daily_data = (
+        qs.filter(transaction_type__iexact="expense", date__gte=thirty_days_ago)
+        .values("date")
+        .annotate(total=Sum("amount"))
+        .order_by("date")
+    )
+    daily_labels = [d["date"].strftime("%d %b") for d in daily_data]
+    daily_values = [float(d["total"]) for d in daily_data]
+
+    # ── Top 5 spending categories ──
+    top_categories = (
+        qs.filter(transaction_type__iexact="expense")
+        .values("category")
+        .annotate(total=Sum("amount"), count=Count("id"))
+        .order_by("-total")[:5]
+    )
+    top_cats = [
+        {"name": d["category"], "total": float(d["total"]), "count": d["count"]}
+        for d in top_categories
+    ]
+
+    # ── Payment mode breakdown ──
+    payment_data = (
+        qs.filter(transaction_type__iexact="expense")
+        .values("payment_mode")
+        .annotate(total=Sum("amount"))
+        .order_by("-total")
+    )
+    pay_labels = [d["payment_mode"] for d in payment_data]
+    pay_values = [float(d["total"]) for d in payment_data]
+
+    # ── All categories for filter dropdown ──
+    all_categories = Category.objects.filter(user=user).values_list("name", flat=True).distinct()
+
+    context = {
+        # Filters
+        "filter_from": filter_from,
+        "filter_to": filter_to,
+        "filter_category": filter_category,
+        "all_categories": all_categories,
+        # Summary
+        "total_income": total_income,
+        "total_expense": total_expense,
+        "net_savings": net_savings,
+        "txn_count": txn_count,
+        # Pie chart
+        "pie_labels": json.dumps(pie_labels),
+        "pie_values": json.dumps(pie_values),
+        # Bar chart
+        "bar_labels": json.dumps(bar_labels),
+        "bar_income": json.dumps(bar_income),
+        "bar_expense": json.dumps(bar_expense),
+        # Line chart (daily)
+        "daily_labels": json.dumps(daily_labels),
+        "daily_values": json.dumps(daily_values),
+        # Payment mode
+        "pay_labels": json.dumps(pay_labels),
+        "pay_values": json.dumps(pay_values),
+        # Top categories
+        "top_cats": top_cats,
+    }
+    return render(request, "transactions/reports.html", context)

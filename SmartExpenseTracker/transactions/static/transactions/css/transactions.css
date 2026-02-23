@@ -173,6 +173,11 @@ tbody tr:hover {
   color: #2ecc71;
 }
 
+.brand-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 /* Menu Links */
 .menu a {
   display: flex;

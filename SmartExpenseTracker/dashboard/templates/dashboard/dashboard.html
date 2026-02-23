@@ -7,6 +7,7 @@
     <title>Dashboard | Smart Expense Tracker</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -14,13 +15,14 @@
 
         <!-- Sidebar -->
         <aside class="sidebar">
-            <h2 class="brand">Smart<span>Tracker</span></h2>
+            <a href="{% url 'core:landing' %}" class="brand-link"><h2 class="brand">Smart<span>Tracker</span></h2></a>
 
             <nav class="menu">
                 <a href="{% url 'dashboard:dashboard_view' %}" class="active">Dashboard</a>
                 <a href="{% url 'transactions:add_transaction' %}">Add Transaction</a>
                 <a href="{% url 'transactions:transactions' %}">Transactions</a>
                 <a href="{% url 'transactions:categories' %}">Categories</a>
+                <a href="{% url 'transactions:reports' %}">Reports</a>
                 <a href="{% url 'accounts:logout_view' %}" class="logout">Logout</a>
             </nav>
         </aside>
@@ -61,16 +63,22 @@
                 </div>
             </section>
 
-            <!-- Charts Placeholder -->
+            <!-- Charts -->
             <section class="charts">
                 <div class="chart-box">
                     <h3>Expense by Category</h3>
-                    <div class="chart-placeholder">Pie Chart</div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                    <p class="chart-empty" id="pieEmpty" style="display:none;">No expense data yet</p>
                 </div>
 
                 <div class="chart-box">
                     <h3>Monthly Trend</h3>
-                    <div class="chart-placeholder">Line Chart</div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                    <p class="chart-empty" id="lineEmpty" style="display:none;">No data yet</p>
                 </div>
             </section>
 
@@ -114,12 +122,164 @@
     </div>
 
     <script>
-        // Auto-dismiss alerts after 3 seconds
-        setTimeout(() => {
-            document.querySelectorAll('.alert').forEach(alert => {
-                alert.style.transition = 'opacity 0.5s ease';
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 500);
+        // ── Chart.js Global Defaults ──
+        Chart.defaults.color = '#b2bec3';
+        Chart.defaults.font.family = "'Segoe UI', sans-serif";
+
+        // ── Color Palette ──
+        var chartColors = [
+            '#2ecc71', '#3498db', '#e74c3c', '#f1c40f', '#9b59b6',
+            '#1abc9c', '#e67e22', '#2980b9', '#c0392b', '#16a085',
+            '#d35400', '#8e44ad', '#27ae60', '#2c3e50'
+        ];
+
+        // ── Pie/Doughnut Chart ──
+        var pieLabels = {{ pie_labels|safe }};
+        var pieValues = {{ pie_values|safe }};
+
+        if (pieLabels.length === 0) {
+            document.getElementById('pieChart').style.display = 'none';
+            document.getElementById('pieEmpty').style.display = 'block';
+        } else {
+            new Chart(document.getElementById('pieChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: pieLabels,
+                    datasets: [{
+                        data: pieValues,
+                        backgroundColor: chartColors.slice(0, pieLabels.length),
+                        borderColor: '#1e2327',
+                        borderWidth: 3,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '55%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true,
+                                pointStyleWidth: 10
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1e2327',
+                            titleColor: '#fff',
+                            bodyColor: '#e0e0e0',
+                            borderColor: '#2d3436',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            padding: 12,
+                            callbacks: {
+                                label: function(ctx) {
+                                    var total = ctx.dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                                    var pct = ((ctx.parsed / total) * 100).toFixed(1);
+                                    return ctx.label + ': ₹' + ctx.parsed.toLocaleString() + ' (' + pct + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ── Line Chart (Monthly Trend) ──
+        var lineLabels = {{ line_labels|safe }};
+        var lineIncome = {{ line_income|safe }};
+        var lineExpense = {{ line_expense|safe }};
+
+        if (lineLabels.length === 0) {
+            document.getElementById('lineChart').style.display = 'none';
+            document.getElementById('lineEmpty').style.display = 'block';
+        } else {
+            new Chart(document.getElementById('lineChart'), {
+                type: 'line',
+                data: {
+                    labels: lineLabels,
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: lineIncome,
+                            borderColor: '#2ecc71',
+                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: '#2ecc71',
+                            borderWidth: 2.5
+                        },
+                        {
+                            label: 'Expense',
+                            data: lineExpense,
+                            borderColor: '#e74c3c',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: '#e74c3c',
+                            borderWidth: 2.5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(45, 52, 54, 0.5)' },
+                            ticks: { color: '#b2bec3' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(45, 52, 54, 0.5)' },
+                            ticks: {
+                                color: '#b2bec3',
+                                callback: function(val) { return '₹' + val.toLocaleString(); }
+                            },
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1e2327',
+                            titleColor: '#fff',
+                            bodyColor: '#e0e0e0',
+                            borderColor: '#2d3436',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            padding: 12,
+                            callbacks: {
+                                label: function(ctx) {
+                                    return ctx.dataset.label + ': ₹' + ctx.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Auto-dismiss alerts
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(el) {
+                el.style.transition = 'opacity 0.5s ease';
+                el.style.opacity = '0';
+                setTimeout(function() { el.remove(); }, 500);
             });
         }, 3000);
     </script>

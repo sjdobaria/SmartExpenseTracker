@@ -15,12 +15,13 @@
 <body>
   <div class="dashboard-wrapper">
     <aside class="sidebar">
-      <h2 class="brand">Smart<span>Tracker</span></h2>
+      <a href="{% url 'core:landing' %}" class="brand-link"><h2 class="brand">Smart<span>Tracker</span></h2></a>
       <nav class="menu">
         <a href="{% url 'dashboard:dashboard_view' %}">Dashboard</a>
         <a href="{% url 'transactions:add_transaction' %}">Add Transaction</a>
         <a href="{% url 'transactions:transactions' %}">Transactions</a>
         <a href="{% url 'transactions:categories' %}">Categories</a>
+        <a href="{% url 'transactions:reports' %}">Reports</a>
         <a href="{% url 'accounts:logout_view' %}" class="logout">Logout</a>
       </nav>
     </aside>

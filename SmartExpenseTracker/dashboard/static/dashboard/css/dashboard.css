@@ -33,6 +33,11 @@ body {
     color: #2ecc71;
 }
 
+.brand-link {
+    text-decoration: none;
+    color: inherit;
+}
+
 .menu a {
     display: block;
     padding: 12px 15px;
@@ -115,7 +120,7 @@ body {
 /* Charts */
 .charts {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 20px;
     margin-bottom: 30px;
 }
@@ -123,19 +128,26 @@ body {
 .chart-box {
     background: #1e2327;
     border-radius: 15px;
-    padding: 20px;
+    padding: 25px;
     border: 1px solid #2d3436;
 }
 
-.chart-placeholder {
-    margin-top: 20px;
+.chart-box h3 {
+    margin-bottom: 15px;
+}
+
+.chart-canvas-wrap {
+    position: relative;
+    height: 280px;
+}
+
+.chart-empty {
     height: 200px;
-    background: #161a1d;
-    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #636e72;
+    font-style: italic;
 }
 
 /* Transactions */

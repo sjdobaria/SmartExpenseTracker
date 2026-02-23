@@ -37,6 +37,11 @@ body {
     color: #2ecc71;
 }
 
+.brand-link {
+    text-decoration: none;
+    color: inherit;
+}
+
 .menu a {
     display: flex;
     align-items: center;
