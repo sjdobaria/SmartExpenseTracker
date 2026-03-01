@@ -51,9 +51,9 @@ def dashboard_view(request):
     )
 
     # Build a merged set of months
-    all_months = set()
-    income_map = {}
-    expense_map = {}
+    all_months: set = set()
+    income_map: dict = {}
+    expense_map: dict = {}
 
     for item in monthly_income:
         month_str = item["month"].strftime("%b %Y")
@@ -65,12 +65,14 @@ def dashboard_view(request):
         expense_map[month_str] = float(item["total"])
         all_months.add(item["month"])
 
-    sorted_months = sorted(all_months)[-6:]  # last 6 months
+    sorted_all = sorted(all_months)
+    sorted_months = sorted_all[-6:] if len(sorted_all) > 6 else sorted_all  # last 6 months
     line_labels = [m.strftime("%b %Y") for m in sorted_months]
     line_income = [income_map.get(label, 0) for label in line_labels]
     line_expense = [expense_map.get(label, 0) for label in line_labels]
 
     context = {
+        "active_page": "dashboard",
         "income_total": income_total,
         "expense_total": expense_total,
         "balance": balance,

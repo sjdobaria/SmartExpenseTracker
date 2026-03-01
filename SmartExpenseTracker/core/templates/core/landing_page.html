@@ -1,168 +1,181 @@
 {%load static%}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Smart Expense Tracker | Dark Mode</title>
-    <link rel="stylesheet" href="{% static 'core/css/landing_page.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/landing_page.css' %}" />
+  </head>
 
-</head>
-
-<body>
+  <body>
     <div class="page-wrapper">
-        <nav class="navbar">
-            <div class="logo">
-                Smart<span class="highlight">Tracker</span>
-            </div>
+      <nav class="navbar">
+        <div class="logo">Smart<span class="highlight">Tracker</span></div>
 
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
 
-            <div class="nav-links">
-                <a href="#hero" class="active">Home</a>
-                <a href="#features">Features</a>
-                <a href="#footer">Contact</a>
-                <a href="{% url 'accounts:login_view' %}" class="login-link">Login</a>
-            </div>
-        </nav>
+        <div class="nav-links" id="navLinks">
+          <a href="#hero" class="active">Home</a>
+          <a href="#features">Features</a>
+          <a href="#footer">Contact</a>
+          <a href="{% url 'accounts:login_view' %}" class="login-link">Login</a>
+        </div>
+      </nav>
 
+      <header class="hero-container" id="hero">
+        <div class="hero-text scroll-reveal">
+          <h1>
+            <span id="typing-text"></span>
+          </h1>
 
-        <header class="hero-container" id="hero">
-            <div class="hero-text scroll-reveal">
-                <h1>
-                    <span id="typing-text"></span>
-                </h1>
+          <p>
+            Stop wondering where your money went. Join 10,000+ users who track
+            income and expenses effortlessly with our encrypted dashboard.
+          </p>
+          <div class="btn-group">
+            <a href="{% url 'accounts:signup_view'%}" class="cta-btn"
+              >Get Started</a
+            >
+          </div>
+        </div>
+        <div class="hero-image scroll-reveal float-animation">
+          <img
+            src="{% static 'core/images/new-bg.png'%}"
+            alt="Expense Tracker Dashboard"
+          />
+        </div>
+      </header>
 
-                <p>
-                    Stop wondering where your money went. Join 10,000+ users who
-                    track income and expenses effortlessly with our encrypted dashboard.
-                </p>
-                <div class="btn-group">
-                    <a href="{% url 'accounts:signup_view'%}" class="cta-btn">Get Started</a>
-                </div>
-            </div>
-            <div class="hero-image scroll-reveal float-animation">
-                <img src="{% static 'core/images/new-bg.png'%}" alt="Expense Tracker Dashboard">
-            </div>
-        </header>
+      <section class="features-section" id="features">
+        <h2 class="section-title scroll-reveal">Features</h2>
 
-        <section class="features-section" id="features">
-            <h2 class="section-title scroll-reveal">Features</h2>
+        <div class="features-grid">
+          <div class="feature-card scroll-reveal">
+            <div class="icon">📊</div>
+            <h3>Expense Analytics</h3>
+            <p>
+              Visualize your spending with category-wise and monthly reports.
+            </p>
+          </div>
 
-            <div class="features-grid">
-                <div class="feature-card scroll-reveal">
-                    <div class="icon">📊</div>
-                    <h3>Expense Analytics</h3>
-                    <p>Visualize your spending with category-wise and monthly reports.</p>
-                </div>
+          <div class="feature-card scroll-reveal">
+            <div class="icon">🤖</div>
+            <h3>Smart Categorization</h3>
+            <p>
+              Automatically classify expenses using intelligent keyword
+              analysis.
+            </p>
+          </div>
 
-                <div class="feature-card scroll-reveal">
-                    <div class="icon">🤖</div>
-                    <h3>Smart Categorization</h3>
-                    <p>Automatically classify expenses using intelligent keyword analysis.</p>
-                </div>
+          <div class="feature-card scroll-reveal">
+            <div class="icon">🔐</div>
+            <h3>Secure Authentication</h3>
+            <p>Protected login system with encrypted passwords and sessions.</p>
+          </div>
 
+          <div class="feature-card scroll-reveal">
+            <div class="icon">☁️</div>
+            <h3>Cloud Data Storage</h3>
+            <p>Access your financial data anytime with secure cloud storage.</p>
+          </div>
+        </div>
+      </section>
 
-                <div class="feature-card scroll-reveal">
-                    <div class="icon">🔐</div>
-                    <h3>Secure Authentication</h3>
-                    <p>Protected login system with encrypted passwords and sessions.</p>
-                </div>
+      <footer class="main-footer">
+        <div class="footer-container" id="footer">
+          <!-- Brand Info -->
+          <div class="footer-section">
+            <h3>Smart<span>Tracker</span></h3>
+            <p>
+              SmartTracker helps you track income, manage expenses, and gain
+              actionable insights to build better financial habits.
+            </p>
+          </div>
 
-                <div class="feature-card scroll-reveal">
-                    <div class="icon">☁️</div>
-                    <h3>Cloud Data Storage</h3>
-                    <p>Access your financial data anytime with secure cloud storage.</p>
-                </div>
-            </div>
-        </section>
+          <!-- Quick Links -->
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul class="footer-links">
+              <li><a href="#hero">Home</a></li>
+              <li><a href="#features">Features</a></li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
 
+          <!-- Contact Info -->
+          <div class="footer-section">
+            <h4>Contact</h4>
+            <!-- <p>📧 support@smartexpense.com</p> -->
+            <p>📞 +91 99258 99323</p>
+            <p>📍 India</p>
+          </div>
+        </div>
 
-        <footer class="main-footer">
-            <div class="footer-container" id="footer">
-
-                <!-- Brand Info -->
-                <div class="footer-section">
-                    <h3>Smart<span>Tracker</span></h3>
-                    <p>
-                        SmartTracker helps you track income, manage expenses,
-                        and gain actionable insights to build better financial habits.
-                    </p>
-                </div>
-
-                <!-- Quick Links -->
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul class="footer-links">
-                        <li><a href="#hero">Home</a></li>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </div>
-
-                <!-- Contact Info -->
-                <div class="footer-section">
-                    <h4>Contact</h4>
-                    <!-- <p>📧 support@smartexpense.com</p> -->
-                    <p>📞 +91 99258 99323</p>
-                    <p>📍 India</p>
-                </div>
-
-            </div>
-
-            <div class="footer-bottom">
-                <p>
-                    © 2026 Smart Expense Tracker
-                </p>
-            </div>
-        </footer>
-
+        <div class="footer-bottom">
+          <p>© 2026 Smart Expense Tracker</p>
+        </div>
+      </footer>
     </div>
 
     <script>
-        const observerOptions = { threshold: 0.1 };
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
+      const observerOptions = { threshold: 0.1 };
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      }, observerOptions);
 
-        document.querySelectorAll('.scroll-reveal').forEach((el) => observer.observe(el));
+      document
+        .querySelectorAll(".scroll-reveal")
+        .forEach((el) => observer.observe(el));
 
+      const text = "Master Your Money with Smart Tracking";
+      const typingElement = document.getElementById("typing-text");
+      let index = 0;
 
-        const text = "Master Your Money with Smart Tracking";
-        const typingElement = document.getElementById("typing-text");
-        let index = 0;
-
-        function typeEffect() {
-            if (index < text.length) {
-                // Highlight only "Smart Tracking"
-                if (text.substring(index, index + 14) === "Smart Tracking") {
-                    typingElement.innerHTML += `<span class="highlight">Smart Tracking</span>`;
-                    index += 14;
-                } else {
-                    typingElement.innerHTML += text.charAt(index);
-                    index++;
-                }
-                setTimeout(typeEffect, 70); // typing speed
-            }
+      function typeEffect() {
+        if (index < text.length) {
+          // Highlight only "Smart Tracking"
+          if (text.substring(index, index + 14) === "Smart Tracking") {
+            typingElement.innerHTML += `<span class="highlight">Smart Tracking</span>`;
+            index += 14;
+          } else {
+            typingElement.innerHTML += text.charAt(index);
+            index++;
+          }
+          setTimeout(typeEffect, 70); // typing speed
         }
+      }
 
-        // Start typing after page loads
-        window.addEventListener("load", () => {
-            typeEffect();
+      // Start typing after page loads
+      window.addEventListener("load", () => {
+        typeEffect();
+      });
+
+      window.addEventListener("load", () => {
+        window.scrollTo({ top: 0, behavior: "instant" });
+      });
+
+      // Hamburger menu toggle
+      const hamburger = document.getElementById("hamburgerBtn");
+      const navLinks = document.getElementById("navLinks");
+      hamburger.addEventListener("click", () => {
+        navLinks.classList.toggle("open");
+        hamburger.classList.toggle("active");
+      });
+      // Close mobile nav on link click
+      navLinks.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+          navLinks.classList.remove("open");
+          hamburger.classList.remove("active");
         });
-
-
-        window.addEventListener("load", () => {
-            window.scrollTo({ top: 0, behavior: "instant" });
-        });
-
-
+      });
     </script>
-</body>
-
+  </body>
 </html>

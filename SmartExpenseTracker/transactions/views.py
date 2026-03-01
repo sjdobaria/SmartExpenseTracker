@@ -66,6 +66,7 @@ def add_expense(request):
     income_categories = Category.objects.filter(user=request.user, type="income")
     expense_categories = Category.objects.filter(user=request.user, type="expense")
     context = {
+        "active_page": "add_transaction",
         "income_categories": income_categories,
         "expense_categories": expense_categories,
     }
@@ -106,6 +107,7 @@ def transactions_view(request):
     all_categories = Category.objects.filter(user=user).values_list("name", flat=True).distinct()
 
     context = {
+        "active_page": "transactions",
         "transactions": qs,
         "result_count": qs.count(),
         "search_query": search_query,
@@ -190,6 +192,7 @@ def edit_expense(request, pk):
     income_categories = Category.objects.filter(user=request.user, type="income")
     expense_categories = Category.objects.filter(user=request.user, type="expense")
     context = {
+        "active_page": "add_transaction",
         "expense": expense,
         "income_categories": income_categories,
         "expense_categories": expense_categories,
@@ -229,6 +232,7 @@ def categories_view(request):
     expense_categories = Category.objects.filter(user=user, type="expense")
 
     context = {
+        "active_page": "categories",
         "income_categories": income_categories,
         "expense_categories": expense_categories,
     }
@@ -336,9 +340,9 @@ def reports_view(request):
         .order_by("month")
     )
 
-    all_months = set()
-    inc_map = {}
-    exp_map = {}
+    all_months: set = set()
+    inc_map: dict = {}
+    exp_map: dict = {}
 
     for item in monthly_income:
         label = item["month"].strftime("%b %Y")
@@ -350,7 +354,8 @@ def reports_view(request):
         exp_map[label] = float(item["total"])
         all_months.add(item["month"])
 
-    sorted_months = sorted(all_months)[-12:]
+    sorted_all = sorted(all_months)
+    sorted_months = sorted_all[-12:] if len(sorted_all) > 12 else sorted_all
     bar_labels = [m.strftime("%b %Y") for m in sorted_months]
     bar_income = [inc_map.get(l, 0) for l in bar_labels]
     bar_expense = [exp_map.get(l, 0) for l in bar_labels]
@@ -392,6 +397,7 @@ def reports_view(request):
     all_categories = Category.objects.filter(user=user).values_list("name", flat=True).distinct()
 
     context = {
+        "active_page": "reports",
         # Filters
         "filter_from": filter_from,
         "filter_to": filter_to,

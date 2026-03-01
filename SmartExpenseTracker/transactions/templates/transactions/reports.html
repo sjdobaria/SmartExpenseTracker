@@ -1,365 +1,371 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Reports & Analytics | SmartTracker</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'transactions/css/reports.css' %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-</head>
-
-<body>
-    <div class="dashboard-wrapper">
-
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <a href="{% url 'core:landing' %}" class="brand-link"><h2 class="brand">Smart<span>Tracker</span></h2></a>
-            <nav class="menu">
-                <a href="{% url 'dashboard:dashboard_view' %}">Dashboard</a>
-                <a href="{% url 'transactions:add_transaction' %}">Add Transaction</a>
-                <a href="{% url 'transactions:transactions' %}">Transactions</a>
-                <a href="{% url 'transactions:categories' %}">Categories</a>
-                <a href="{% url 'transactions:reports' %}" class="active">Reports</a>
-                <a href="{% url 'accounts:logout_view' %}" class="logout">Logout</a>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-
-            <header class="topbar">
-                <h1>Reports & Analytics</h1>
-            </header>
-
-            <!-- Filters -->
-            <section class="filters-card">
-                <form method="GET" class="filters-form">
-                    <div class="filter-group">
-                        <label>From</label>
-                        <input type="text" id="filterFrom" name="from" value="{{ filter_from }}" placeholder="Select date" readonly />
-                    </div>
-                    <div class="filter-group">
-                        <label>To</label>
-                        <input type="text" id="filterTo" name="to" value="{{ filter_to }}" placeholder="Select date" readonly />
-                    </div>
-                    <div class="filter-group">
-                        <label>Category</label>
-                        <select name="category">
-                            <option value="">All Categories</option>
-                            {% for cat in all_categories %}
-                            <option value="{{ cat }}" {% if filter_category == cat %}selected{% endif %}>{{ cat }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button type="submit" class="btn primary">Apply</button>
-                    <a href="{% url 'transactions:reports' %}" class="btn secondary">Reset</a>
-                </form>
-            </section>
-
-            <!-- Summary Cards -->
-            <section class="summary-cards">
-                <div class="card income">
-                    <h3>Total Income</h3>
-                    <p>₹{{ total_income|floatformat:2 }}</p>
-                </div>
-                <div class="card expense">
-                    <h3>Total Expenses</h3>
-                    <p>₹{{ total_expense|floatformat:2 }}</p>
-                </div>
-                <div class="card savings">
-                    <h3>Net Savings</h3>
-                    <p>₹{{ net_savings|floatformat:2 }}</p>
-                </div>
-                <div class="card count">
-                    <h3>Transactions</h3>
-                    <p>{{ txn_count }}</p>
-                </div>
-            </section>
-
-            <!-- Charts Row 1: Pie + Bar -->
-            <section class="charts-row">
-                <div class="chart-box">
-                    <h3>Expense by Category</h3>
-                    <div class="chart-canvas-wrap">
-                        <canvas id="pieChart"></canvas>
-                    </div>
-                    <p class="chart-empty" id="pieEmpty" style="display:none;">No expense data available</p>
-                </div>
-
-                <div class="chart-box">
-                    <h3>Income vs Expense (Monthly)</h3>
-                    <div class="chart-canvas-wrap">
-                        <canvas id="barChart"></canvas>
-                    </div>
-                    <p class="chart-empty" id="barEmpty" style="display:none;">No monthly data available</p>
-                </div>
-            </section>
-
-            <!-- Charts Row 2: Line + Payment -->
-            <section class="charts-row">
-                <div class="chart-box">
-                    <h3>Daily Spending (Last 30 Days)</h3>
-                    <div class="chart-canvas-wrap">
-                        <canvas id="lineChart"></canvas>
-                    </div>
-                    <p class="chart-empty" id="lineEmpty" style="display:none;">No recent spending data</p>
-                </div>
-
-                <div class="chart-box">
-                    <h3>Payment Mode Breakdown</h3>
-                    <div class="chart-canvas-wrap">
-                        <canvas id="payChart"></canvas>
-                    </div>
-                    <p class="chart-empty" id="payEmpty" style="display:none;">No payment data available</p>
-                </div>
-            </section>
-
-            <!-- Top Spending Categories -->
-            <section class="top-categories">
-                <h2>Top Spending Categories</h2>
-                <div class="top-list">
-                    {% for cat in top_cats %}
-                    <div class="top-item">
-                        <div class="top-rank">{{ forloop.counter }}</div>
-                        <div class="top-info">
-                            <span class="top-name">{{ cat.name }}</span>
-                            <span class="top-count">{{ cat.count }} transaction{{ cat.count|pluralize }}</span>
-                        </div>
-                        <div class="top-amount">₹{{ cat.total|floatformat:2 }}</div>
-                    </div>
-                    {% empty %}
-                    <p class="empty-msg">No expense data yet.</p>
-                    {% endfor %}
-                </div>
-            </section>
-
-        </main>
+{% extends 'layout.html' %} {% load static %} {% block title %}Reports &
+Analytics | SmartTracker{% endblock %} {% block stylesheets %}
+<link rel="stylesheet" href="{% static 'transactions/css/reports.css' %}" />
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{% endblock %} {% block topbar %}
+<h1>Reports & Analytics</h1>
+{% endblock %} {% block content %}
+<!-- Filters -->
+<section class="filters-card">
+  <form method="GET" class="filters-form">
+    <div class="filter-group">
+      <label>From</label>
+      <input
+        type="text"
+        id="filterFrom"
+        name="from"
+        value="{{ filter_from }}"
+        placeholder="Select date"
+        readonly
+      />
     </div>
+    <div class="filter-group">
+      <label>To</label>
+      <input
+        type="text"
+        id="filterTo"
+        name="to"
+        value="{{ filter_to }}"
+        placeholder="Select date"
+        readonly
+      />
+    </div>
+    <div class="filter-group">
+      <label>Category</label>
+      <select name="category">
+        <option value="">All Categories</option>
+        {% for cat in all_categories %}
+        <option
+          value="{{ cat }}"
+          {%
+          if
+          filter_category=""
+          ="cat"
+          %}selected{%
+          endif
+          %}
+        >
+          {{ cat }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn primary">Apply</button>
+    <a href="{% url 'transactions:reports' %}" class="btn secondary">Reset</a>
+  </form>
+</section>
 
-    <script>
-        Chart.defaults.color = '#b2bec3';
-        Chart.defaults.font.family = "'Segoe UI', sans-serif";
+<!-- Summary Cards -->
+<section class="summary-cards">
+  <div class="card income">
+    <h3>Total Income</h3>
+    <p>₹{{ total_income|floatformat:2 }}</p>
+  </div>
+  <div class="card expense">
+    <h3>Total Expenses</h3>
+    <p>₹{{ total_expense|floatformat:2 }}</p>
+  </div>
+  <div class="card savings">
+    <h3>Net Savings</h3>
+    <p>₹{{ net_savings|floatformat:2 }}</p>
+  </div>
+  <div class="card count">
+    <h3>Transactions</h3>
+    <p>{{ txn_count }}</p>
+  </div>
+</section>
 
-        var chartColors = [
-            '#2ecc71', '#3498db', '#e74c3c', '#f1c40f', '#9b59b6',
-            '#1abc9c', '#e67e22', '#2980b9', '#c0392b', '#16a085',
-            '#d35400', '#8e44ad', '#27ae60', '#2c3e50'
-        ];
+<!-- Charts Row 1: Pie + Bar -->
+<section class="charts-row">
+  <div class="chart-box">
+    <h3>Expense by Category</h3>
+    <div class="chart-canvas-wrap">
+      <canvas id="pieChart"></canvas>
+    </div>
+    <p class="chart-empty" id="pieEmpty" style="display: none">
+      No expense data available
+    </p>
+  </div>
 
-        var tooltipStyle = {
-            backgroundColor: '#1e2327',
-            titleColor: '#fff',
-            bodyColor: '#e0e0e0',
-            borderColor: '#2d3436',
-            borderWidth: 1,
-            cornerRadius: 8,
-            padding: 12
-        };
+  <div class="chart-box">
+    <h3>Income vs Expense (Monthly)</h3>
+    <div class="chart-canvas-wrap">
+      <canvas id="barChart"></canvas>
+    </div>
+    <p class="chart-empty" id="barEmpty" style="display: none">
+      No monthly data available
+    </p>
+  </div>
+</section>
 
-        // ── PIE CHART ──
-        var pieLabels = {{ pie_labels|safe }};
-        var pieValues = {{ pie_values|safe }};
+<!-- Charts Row 2: Line + Payment -->
+<section class="charts-row">
+  <div class="chart-box">
+    <h3>Daily Spending (Last 30 Days)</h3>
+    <div class="chart-canvas-wrap">
+      <canvas id="lineChart"></canvas>
+    </div>
+    <p class="chart-empty" id="lineEmpty" style="display: none">
+      No recent spending data
+    </p>
+  </div>
 
-        if (pieLabels.length === 0) {
-            document.getElementById('pieChart').style.display = 'none';
-            document.getElementById('pieEmpty').style.display = 'block';
-        } else {
-            new Chart(document.getElementById('pieChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: pieLabels,
-                    datasets: [{
-                        data: pieValues,
-                        backgroundColor: chartColors.slice(0, pieLabels.length),
-                        borderColor: '#1e2327',
-                        borderWidth: 3,
-                        hoverOffset: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '55%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, pointStyleWidth: 10 } },
-                        tooltip: Object.assign({}, tooltipStyle, {
-                            callbacks: {
-                                label: function(ctx) {
-                                    var total = ctx.dataset.data.reduce(function(a, b) { return a + b; }, 0);
-                                    var pct = ((ctx.parsed / total) * 100).toFixed(1);
-                                    return ctx.label + ': ₹' + ctx.parsed.toLocaleString() + ' (' + pct + '%)';
-                                }
-                            }
-                        })
-                    }
-                }
-            });
-        }
+  <div class="chart-box">
+    <h3>Payment Mode Breakdown</h3>
+    <div class="chart-canvas-wrap">
+      <canvas id="payChart"></canvas>
+    </div>
+    <p class="chart-empty" id="payEmpty" style="display: none">
+      No payment data available
+    </p>
+  </div>
+</section>
 
-        // ── BAR CHART ──
-        var barLabels = {{ bar_labels|safe }};
-        var barIncome = {{ bar_income|safe }};
-        var barExpense = {{ bar_expense|safe }};
+<!-- Top Spending Categories -->
+<section class="top-categories">
+  <h2>Top Spending Categories</h2>
+  <div class="top-list">
+    {% for cat in top_cats %}
+    <div class="top-item">
+      <div class="top-rank">{{ forloop.counter }}</div>
+      <div class="top-info">
+        <span class="top-name">{{ cat.name }}</span>
+        <span class="top-count"
+          >{{ cat.count }} transaction{{ cat.count|pluralize }}</span
+        >
+      </div>
+      <div class="top-amount">₹{{ cat.total|floatformat:2 }}</div>
+    </div>
+    {% empty %}
+    <p class="empty-msg">No expense data yet.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %} {% block scripts %}
+<script>
+  Chart.defaults.color = '#b2bec3';
+  Chart.defaults.font.family = "'Segoe UI', sans-serif";
 
-        if (barLabels.length === 0) {
-            document.getElementById('barChart').style.display = 'none';
-            document.getElementById('barEmpty').style.display = 'block';
-        } else {
-            new Chart(document.getElementById('barChart'), {
-                type: 'bar',
-                data: {
-                    labels: barLabels,
-                    datasets: [
-                        {
-                            label: 'Income',
-                            data: barIncome,
-                            backgroundColor: 'rgba(46, 204, 113, 0.7)',
-                            borderColor: '#2ecc71',
-                            borderWidth: 1,
-                            borderRadius: 6
-                        },
-                        {
-                            label: 'Expense',
-                            data: barExpense,
-                            backgroundColor: 'rgba(231, 76, 60, 0.7)',
-                            borderColor: '#e74c3c',
-                            borderWidth: 1,
-                            borderRadius: 6
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { grid: { color: 'rgba(45,52,54,0.5)' } },
-                        y: {
-                            grid: { color: 'rgba(45,52,54,0.5)' },
-                            beginAtZero: true,
-                            ticks: { callback: function(v) { return '₹' + v.toLocaleString(); } }
-                        }
-                    },
-                    plugins: {
-                        legend: { labels: { padding: 15, usePointStyle: true } },
-                        tooltip: Object.assign({}, tooltipStyle, {
-                            callbacks: {
-                                label: function(ctx) { return ctx.dataset.label + ': ₹' + ctx.parsed.y.toLocaleString(); }
-                            }
-                        })
-                    }
-                }
-            });
-        }
+  var chartColors = [
+      '#2ecc71', '#3498db', '#e74c3c', '#f1c40f', '#9b59b6',
+      '#1abc9c', '#e67e22', '#2980b9', '#c0392b', '#16a085',
+      '#d35400', '#8e44ad', '#27ae60', '#2c3e50'
+  ];
 
-        // ── LINE CHART (Daily) ──
-        var dailyLabels = {{ daily_labels|safe }};
-        var dailyValues = {{ daily_values|safe }};
+  var tooltipStyle = {
+      backgroundColor: '#1e2327',
+      titleColor: '#fff',
+      bodyColor: '#e0e0e0',
+      borderColor: '#2d3436',
+      borderWidth: 1,
+      cornerRadius: 8,
+      padding: 12
+  };
 
-        if (dailyLabels.length === 0) {
-            document.getElementById('lineChart').style.display = 'none';
-            document.getElementById('lineEmpty').style.display = 'block';
-        } else {
-            new Chart(document.getElementById('lineChart'), {
-                type: 'line',
-                data: {
-                    labels: dailyLabels,
-                    datasets: [{
-                        label: 'Daily Spending',
-                        data: dailyValues,
-                        borderColor: '#e74c3c',
-                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointHoverRadius: 7,
-                        pointBackgroundColor: '#e74c3c',
-                        borderWidth: 2.5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { grid: { color: 'rgba(45,52,54,0.5)' } },
-                        y: {
-                            grid: { color: 'rgba(45,52,54,0.5)' },
-                            beginAtZero: true,
-                            ticks: { callback: function(v) { return '₹' + v.toLocaleString(); } }
-                        }
-                    },
-                    plugins: {
-                        legend: { labels: { padding: 15, usePointStyle: true } },
-                        tooltip: Object.assign({}, tooltipStyle, {
-                            callbacks: {
-                                label: function(ctx) { return '₹' + ctx.parsed.y.toLocaleString(); }
-                            }
-                        })
-                    }
-                }
-            });
-        }
+  // ── PIE CHART ──
+  var pieLabels = {{ pie_labels|safe }};
+  var pieValues = {{ pie_values|safe }};
 
-        // ── PAYMENT MODE CHART ──
-        var payLabels = {{ pay_labels|safe }};
-        var payValues = {{ pay_values|safe }};
+  if (pieLabels.length === 0) {
+      document.getElementById('pieChart').style.display = 'none';
+      document.getElementById('pieEmpty').style.display = 'block';
+  } else {
+      new Chart(document.getElementById('pieChart'), {
+          type: 'doughnut',
+          data: {
+              labels: pieLabels,
+              datasets: [{
+                  data: pieValues,
+                  backgroundColor: chartColors.slice(0, pieLabels.length),
+                  borderColor: '#1e2327',
+                  borderWidth: 3,
+                  hoverOffset: 8
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              cutout: '55%',
+              plugins: {
+                  legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, pointStyleWidth: 10 } },
+                  tooltip: Object.assign({}, tooltipStyle, {
+                      callbacks: {
+                          label: function(ctx) {
+                              var total = ctx.dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                              var pct = ((ctx.parsed / total) * 100).toFixed(1);
+                              return ctx.label + ': ₹' + ctx.parsed.toLocaleString() + ' (' + pct + '%)';
+                          }
+                      }
+                  })
+              }
+          }
+      });
+  }
 
-        if (payLabels.length === 0) {
-            document.getElementById('payChart').style.display = 'none';
-            document.getElementById('payEmpty').style.display = 'block';
-        } else {
-            new Chart(document.getElementById('payChart'), {
-                type: 'polarArea',
-                data: {
-                    labels: payLabels,
-                    datasets: [{
-                        data: payValues,
-                        backgroundColor: [
-                            'rgba(46, 204, 113, 0.6)',
-                            'rgba(52, 152, 219, 0.6)',
-                            'rgba(231, 76, 60, 0.6)',
-                            'rgba(241, 196, 15, 0.6)',
-                            'rgba(155, 89, 182, 0.6)'
-                        ],
-                        borderColor: '#1e2327',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true } },
-                        tooltip: Object.assign({}, tooltipStyle, {
-                            callbacks: {
-                                label: function(ctx) {
-                                    return ctx.label + ': ₹' + ctx.parsed.r.toLocaleString();
-                                }
-                            }
-                        })
-                    },
-                    scales: {
-                        r: {
-                            grid: { color: 'rgba(45,52,54,0.5)' },
-                            ticks: { display: false }
-                        }
-                    }
-                }
-            });
-        }
-        // ── FLATPICKR DATE PICKERS ──
-        var fpConfig = {
-            dateFormat: 'Y-m-d',
-            altInput: true,
-            altFormat: 'd M Y',
-            disableMobile: true
-        };
-        flatpickr('#filterFrom', fpConfig);
-        flatpickr('#filterTo', fpConfig);
-    </script>
-</body>
+  // ── BAR CHART ──
+  var barLabels = {{ bar_labels|safe }};
+  var barIncome = {{ bar_income|safe }};
+  var barExpense = {{ bar_expense|safe }};
 
-</html>
+  if (barLabels.length === 0) {
+      document.getElementById('barChart').style.display = 'none';
+      document.getElementById('barEmpty').style.display = 'block';
+  } else {
+      new Chart(document.getElementById('barChart'), {
+          type: 'bar',
+          data: {
+              labels: barLabels,
+              datasets: [
+                  {
+                      label: 'Income',
+                      data: barIncome,
+                      backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                      borderColor: '#2ecc71',
+                      borderWidth: 1,
+                      borderRadius: 6
+                  },
+                  {
+                      label: 'Expense',
+                      data: barExpense,
+                      backgroundColor: 'rgba(231, 76, 60, 0.7)',
+                      borderColor: '#e74c3c',
+                      borderWidth: 1,
+                      borderRadius: 6
+                  }
+              ]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                  x: { grid: { color: 'rgba(45,52,54,0.5)' } },
+                  y: {
+                      grid: { color: 'rgba(45,52,54,0.5)' },
+                      beginAtZero: true,
+                      ticks: { callback: function(v) { return '₹' + v.toLocaleString(); } }
+                  }
+              },
+              plugins: {
+                  legend: { labels: { padding: 15, usePointStyle: true } },
+                  tooltip: Object.assign({}, tooltipStyle, {
+                      callbacks: {
+                          label: function(ctx) { return ctx.dataset.label + ': ₹' + ctx.parsed.y.toLocaleString(); }
+                      }
+                  })
+              }
+          }
+      });
+  }
+
+  // ── LINE CHART (Daily) ──
+  var dailyLabels = {{ daily_labels|safe }};
+  var dailyValues = {{ daily_values|safe }};
+
+  if (dailyLabels.length === 0) {
+      document.getElementById('lineChart').style.display = 'none';
+      document.getElementById('lineEmpty').style.display = 'block';
+  } else {
+      new Chart(document.getElementById('lineChart'), {
+          type: 'line',
+          data: {
+              labels: dailyLabels,
+              datasets: [{
+                  label: 'Daily Spending',
+                  data: dailyValues,
+                  borderColor: '#e74c3c',
+                  backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                  fill: true,
+                  tension: 0.4,
+                  pointRadius: 4,
+                  pointHoverRadius: 7,
+                  pointBackgroundColor: '#e74c3c',
+                  borderWidth: 2.5
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                  x: { grid: { color: 'rgba(45,52,54,0.5)' } },
+                  y: {
+                      grid: { color: 'rgba(45,52,54,0.5)' },
+                      beginAtZero: true,
+                      ticks: { callback: function(v) { return '₹' + v.toLocaleString(); } }
+                  }
+              },
+              plugins: {
+                  legend: { labels: { padding: 15, usePointStyle: true } },
+                  tooltip: Object.assign({}, tooltipStyle, {
+                      callbacks: {
+                          label: function(ctx) { return '₹' + ctx.parsed.y.toLocaleString(); }
+                      }
+                  })
+              }
+          }
+      });
+  }
+
+  // ── PAYMENT MODE CHART ──
+  var payLabels = {{ pay_labels|safe }};
+  var payValues = {{ pay_values|safe }};
+
+  if (payLabels.length === 0) {
+      document.getElementById('payChart').style.display = 'none';
+      document.getElementById('payEmpty').style.display = 'block';
+  } else {
+      new Chart(document.getElementById('payChart'), {
+          type: 'polarArea',
+          data: {
+              labels: payLabels,
+              datasets: [{
+                  data: payValues,
+                  backgroundColor: [
+                      'rgba(46, 204, 113, 0.6)',
+                      'rgba(52, 152, 219, 0.6)',
+                      'rgba(231, 76, 60, 0.6)',
+                      'rgba(241, 196, 15, 0.6)',
+                      'rgba(155, 89, 182, 0.6)'
+                  ],
+                  borderColor: '#1e2327',
+                  borderWidth: 2
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true } },
+                  tooltip: Object.assign({}, tooltipStyle, {
+                      callbacks: {
+                          label: function(ctx) {
+                              return ctx.label + ': ₹' + ctx.parsed.r.toLocaleString();
+                          }
+                      }
+                  })
+              },
+              scales: {
+                  r: {
+                      grid: { color: 'rgba(45,52,54,0.5)' },
+                      ticks: { display: false }
+                  }
+              }
+          }
+      });
+  }
+
+  // ── FLATPICKR DATE PICKERS ──
+  var fpConfig = {
+      dateFormat: 'Y-m-d',
+      altInput: true,
+      altFormat: 'd M Y',
+      disableMobile: true
+  };
+  flatpickr('#filterFrom', fpConfig);
+  flatpickr('#filterTo', fpConfig);
+</script>
+{% endblock %}

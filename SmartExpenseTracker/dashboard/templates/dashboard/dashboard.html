@@ -1,289 +1,239 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'layout.html' %} {% load static %} {% block title %}Dashboard | Smart
+Expense Tracker{% endblock %} {% block stylesheets %}
+<link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %} {% block topbar %}
+<h1>Dashboard</h1>
+<p>Welcome back, {{ user.username }} 👋</p>
+{% endblock %} {% block content %}
+<!-- Summary Cards -->
+<section class="summary-cards">
+  <div class="card income">
+    <h3>Total Income</h3>
+    <p>₹{{ income_total|floatformat:2 }}</p>
+  </div>
 
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard | Smart Expense Tracker</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+  <div class="card expense">
+    <h3>Total Expenses</h3>
+    <p>₹{{ expense_total|floatformat:2 }}</p>
+  </div>
 
-<body>
-    <div class="dashboard-wrapper">
+  <div class="card balance">
+    <h3>Current Balance</h3>
+    <p>₹{{ balance|floatformat:2 }}</p>
+  </div>
+</section>
 
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <a href="{% url 'core:landing' %}" class="brand-link"><h2 class="brand">Smart<span>Tracker</span></h2></a>
-
-            <nav class="menu">
-                <a href="{% url 'dashboard:dashboard_view' %}" class="active">Dashboard</a>
-                <a href="{% url 'transactions:add_transaction' %}">Add Transaction</a>
-                <a href="{% url 'transactions:transactions' %}">Transactions</a>
-                <a href="{% url 'transactions:categories' %}">Categories</a>
-                <a href="{% url 'transactions:reports' %}">Reports</a>
-                <a href="{% url 'accounts:logout_view' %}" class="logout">Logout</a>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-
-            <!-- Top Bar -->
-            <header class="topbar">
-                <h1>Dashboard</h1>
-                <p>Welcome back, {{ user.username }} 👋</p>
-            </header>
-
-            <!-- Django Messages -->
-            {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <!-- Summary Cards -->
-            <section class="summary-cards">
-                <div class="card income">
-                    <h3>Total Income</h3>
-                    <p>₹{{ income_total|floatformat:2 }}</p>
-                </div>
-
-                <div class="card expense">
-                    <h3>Total Expenses</h3>
-                    <p>₹{{ expense_total|floatformat:2 }}</p>
-                </div>
-
-                <div class="card balance">
-                    <h3>Current Balance</h3>
-                    <p>₹{{ balance|floatformat:2 }}</p>
-                </div>
-            </section>
-
-            <!-- Charts -->
-            <section class="charts">
-                <div class="chart-box">
-                    <h3>Expense by Category</h3>
-                    <div class="chart-canvas-wrap">
-                        <canvas id="pieChart"></canvas>
-                    </div>
-                    <p class="chart-empty" id="pieEmpty" style="display:none;">No expense data yet</p>
-                </div>
-
-                <div class="chart-box">
-                    <h3>Monthly Trend</h3>
-                    <div class="chart-canvas-wrap">
-                        <canvas id="lineChart"></canvas>
-                    </div>
-                    <p class="chart-empty" id="lineEmpty" style="display:none;">No data yet</p>
-                </div>
-            </section>
-
-            <!-- Recent Transactions -->
-            <section class="transactions">
-                <h2>Recent Transactions</h2>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Category</th>
-                            <th>Amount</th>
-                            <th>Type</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for txn in recent_transactions %}
-                        <tr>
-                            <td>{{ txn.date|date:"d M Y" }}</td>
-                            <td>{{ txn.description|default:"—" }}</td>
-                            <td>{{ txn.category }}</td>
-                            <td>₹{{ txn.amount|floatformat:2 }}</td>
-                            <td
-                                class="{% if txn.transaction_type|lower == 'income' %}income-text{% else %}expense-text{% endif %}">
-                                {{ txn.transaction_type }}
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: #636e72;">No transactions yet. Add your
-                                first one!</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </section>
-
-        </main>
+<!-- Charts -->
+<section class="charts">
+  <div class="chart-box">
+    <h3>Expense by Category</h3>
+    <div class="chart-canvas-wrap">
+      <canvas id="pieChart"></canvas>
     </div>
+    <p class="chart-empty" id="pieEmpty" style="display: none">
+      No expense data yet
+    </p>
+  </div>
 
-    <script>
-        // ── Chart.js Global Defaults ──
-        Chart.defaults.color = '#b2bec3';
-        Chart.defaults.font.family = "'Segoe UI', sans-serif";
+  <div class="chart-box">
+    <h3>Monthly Trend</h3>
+    <div class="chart-canvas-wrap">
+      <canvas id="lineChart"></canvas>
+    </div>
+    <p class="chart-empty" id="lineEmpty" style="display: none">No data yet</p>
+  </div>
+</section>
 
-        // ── Color Palette ──
-        var chartColors = [
-            '#2ecc71', '#3498db', '#e74c3c', '#f1c40f', '#9b59b6',
-            '#1abc9c', '#e67e22', '#2980b9', '#c0392b', '#16a085',
-            '#d35400', '#8e44ad', '#27ae60', '#2c3e50'
-        ];
+<!-- Recent Transactions -->
+<section class="transactions">
+  <h2>Recent Transactions</h2>
 
-        // ── Pie/Doughnut Chart ──
-        var pieLabels = {{ pie_labels|safe }};
-        var pieValues = {{ pie_values|safe }};
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Description</th>
+        <th>Category</th>
+        <th>Amount</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for txn in recent_transactions %}
+      <tr>
+        <td>{{ txn.date|date:"d M Y" }}</td>
+        <td>{{ txn.description|default:"—" }}</td>
+        <td>{{ txn.category }}</td>
+        <td>₹{{ txn.amount|floatformat:2 }}</td>
+        <td
+          class="{% if txn.transaction_type|lower == 'income' %}income-text{% else %}expense-text{% endif %}"
+        >
+          {{ txn.transaction_type }}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" style="text-align: center; color: #636e72">
+          No transactions yet. Add your first one!
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %} {% block scripts %}
+<script>
+  // ── Chart.js Global Defaults ──
+  Chart.defaults.color = '#b2bec3';
+  Chart.defaults.font.family = "'Segoe UI', sans-serif";
 
-        if (pieLabels.length === 0) {
-            document.getElementById('pieChart').style.display = 'none';
-            document.getElementById('pieEmpty').style.display = 'block';
-        } else {
-            new Chart(document.getElementById('pieChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: pieLabels,
-                    datasets: [{
-                        data: pieValues,
-                        backgroundColor: chartColors.slice(0, pieLabels.length),
-                        borderColor: '#1e2327',
-                        borderWidth: 3,
-                        hoverOffset: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '55%',
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 15,
-                                usePointStyle: true,
-                                pointStyleWidth: 10
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: '#1e2327',
-                            titleColor: '#fff',
-                            bodyColor: '#e0e0e0',
-                            borderColor: '#2d3436',
-                            borderWidth: 1,
-                            cornerRadius: 8,
-                            padding: 12,
-                            callbacks: {
-                                label: function(ctx) {
-                                    var total = ctx.dataset.data.reduce(function(a, b) { return a + b; }, 0);
-                                    var pct = ((ctx.parsed / total) * 100).toFixed(1);
-                                    return ctx.label + ': ₹' + ctx.parsed.toLocaleString() + ' (' + pct + '%)';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
+  // ── Color Palette ──
+  var chartColors = [
+      '#2ecc71', '#3498db', '#e74c3c', '#f1c40f', '#9b59b6',
+      '#1abc9c', '#e67e22', '#2980b9', '#c0392b', '#16a085',
+      '#d35400', '#8e44ad', '#27ae60', '#2c3e50'
+  ];
 
-        // ── Line Chart (Monthly Trend) ──
-        var lineLabels = {{ line_labels|safe }};
-        var lineIncome = {{ line_income|safe }};
-        var lineExpense = {{ line_expense|safe }};
+  // ── Pie/Doughnut Chart ──
+  var pieLabels = {{ pie_labels|safe }};
+  var pieValues = {{ pie_values|safe }};
 
-        if (lineLabels.length === 0) {
-            document.getElementById('lineChart').style.display = 'none';
-            document.getElementById('lineEmpty').style.display = 'block';
-        } else {
-            new Chart(document.getElementById('lineChart'), {
-                type: 'line',
-                data: {
-                    labels: lineLabels,
-                    datasets: [
-                        {
-                            label: 'Income',
-                            data: lineIncome,
-                            borderColor: '#2ecc71',
-                            backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 5,
-                            pointHoverRadius: 8,
-                            pointBackgroundColor: '#2ecc71',
-                            borderWidth: 2.5
-                        },
-                        {
-                            label: 'Expense',
-                            data: lineExpense,
-                            borderColor: '#e74c3c',
-                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 5,
-                            pointHoverRadius: 8,
-                            pointBackgroundColor: '#e74c3c',
-                            borderWidth: 2.5
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
-                    scales: {
-                        x: {
-                            grid: { color: 'rgba(45, 52, 54, 0.5)' },
-                            ticks: { color: '#b2bec3' }
-                        },
-                        y: {
-                            grid: { color: 'rgba(45, 52, 54, 0.5)' },
-                            ticks: {
-                                color: '#b2bec3',
-                                callback: function(val) { return '₹' + val.toLocaleString(); }
-                            },
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                padding: 15,
-                                usePointStyle: true
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: '#1e2327',
-                            titleColor: '#fff',
-                            bodyColor: '#e0e0e0',
-                            borderColor: '#2d3436',
-                            borderWidth: 1,
-                            cornerRadius: 8,
-                            padding: 12,
-                            callbacks: {
-                                label: function(ctx) {
-                                    return ctx.dataset.label + ': ₹' + ctx.parsed.y.toLocaleString();
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
+  if (pieLabels.length === 0) {
+      document.getElementById('pieChart').style.display = 'none';
+      document.getElementById('pieEmpty').style.display = 'block';
+  } else {
+      new Chart(document.getElementById('pieChart'), {
+          type: 'doughnut',
+          data: {
+              labels: pieLabels,
+              datasets: [{
+                  data: pieValues,
+                  backgroundColor: chartColors.slice(0, pieLabels.length),
+                  borderColor: '#1e2327',
+                  borderWidth: 3,
+                  hoverOffset: 8
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              cutout: '55%',
+              plugins: {
+                  legend: {
+                      position: 'bottom',
+                      labels: {
+                          padding: 15,
+                          usePointStyle: true,
+                          pointStyleWidth: 10
+                      }
+                  },
+                  tooltip: {
+                      backgroundColor: '#1e2327',
+                      titleColor: '#fff',
+                      bodyColor: '#e0e0e0',
+                      borderColor: '#2d3436',
+                      borderWidth: 1,
+                      cornerRadius: 8,
+                      padding: 12,
+                      callbacks: {
+                          label: function(ctx) {
+                              var total = ctx.dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                              var pct = ((ctx.parsed / total) * 100).toFixed(1);
+                              return ctx.label + ': ₹' + ctx.parsed.toLocaleString() + ' (' + pct + '%)';
+                          }
+                      }
+                  }
+              }
+          }
+      });
+  }
 
-        // Auto-dismiss alerts
-        setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(function(el) {
-                el.style.transition = 'opacity 0.5s ease';
-                el.style.opacity = '0';
-                setTimeout(function() { el.remove(); }, 500);
-            });
-        }, 3000);
-    </script>
+  // ── Line Chart (Monthly Trend) ──
+  var lineLabels = {{ line_labels|safe }};
+  var lineIncome = {{ line_income|safe }};
+  var lineExpense = {{ line_expense|safe }};
 
-</body>
-
-</html>
+  if (lineLabels.length === 0) {
+      document.getElementById('lineChart').style.display = 'none';
+      document.getElementById('lineEmpty').style.display = 'block';
+  } else {
+      new Chart(document.getElementById('lineChart'), {
+          type: 'line',
+          data: {
+              labels: lineLabels,
+              datasets: [
+                  {
+                      label: 'Income',
+                      data: lineIncome,
+                      borderColor: '#2ecc71',
+                      backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                      fill: true,
+                      tension: 0.4,
+                      pointRadius: 5,
+                      pointHoverRadius: 8,
+                      pointBackgroundColor: '#2ecc71',
+                      borderWidth: 2.5
+                  },
+                  {
+                      label: 'Expense',
+                      data: lineExpense,
+                      borderColor: '#e74c3c',
+                      backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                      fill: true,
+                      tension: 0.4,
+                      pointRadius: 5,
+                      pointHoverRadius: 8,
+                      pointBackgroundColor: '#e74c3c',
+                      borderWidth: 2.5
+                  }
+              ]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              interaction: {
+                  intersect: false,
+                  mode: 'index'
+              },
+              scales: {
+                  x: {
+                      grid: { color: 'rgba(45, 52, 54, 0.5)' },
+                      ticks: { color: '#b2bec3' }
+                  },
+                  y: {
+                      grid: { color: 'rgba(45, 52, 54, 0.5)' },
+                      ticks: {
+                          color: '#b2bec3',
+                          callback: function(val) { return '₹' + val.toLocaleString(); }
+                      },
+                      beginAtZero: true
+                  }
+              },
+              plugins: {
+                  legend: {
+                      labels: {
+                          padding: 15,
+                          usePointStyle: true
+                      }
+                  },
+                  tooltip: {
+                      backgroundColor: '#1e2327',
+                      titleColor: '#fff',
+                      bodyColor: '#e0e0e0',
+                      borderColor: '#2d3436',
+                      borderWidth: 1,
+                      cornerRadius: 8,
+                      padding: 12,
+                      callbacks: {
+                          label: function(ctx) {
+                              return ctx.dataset.label + ': ₹' + ctx.parsed.y.toLocaleString();
+                          }
+                      }
+                  }
+              }
+          }
+      });
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}SmartTracker{% endblock %}</title>
+    {% block stylesheets %}{% endblock %} {% block head_extra %}{% endblock %}
+  </head>
+
+  <body>
+    <div class="dashboard-wrapper">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <a href="{% url 'core:landing' %}" class="brand-link">
+          <h2 class="brand">Smart<span>Tracker</span></h2>
+        </a>
+
+        <nav class="menu">
+          <a
+            href="{% url 'dashboard:dashboard_view' %}"
+            {%
+            if
+            active_page=""
+            ="dashboard"
+            %}class="active"
+            {%
+            endif
+            %}
+            >Dashboard</a
+          >
+          <a
+            href="{% url 'transactions:add_transaction' %}"
+            {%
+            if
+            active_page=""
+            ="add_transaction"
+            %}class="active"
+            {%
+            endif
+            %}
+            >Add Transaction</a
+          >
+          <a
+            href="{% url 'transactions:transactions' %}"
+            {%
+            if
+            active_page=""
+            ="transactions"
+            %}class="active"
+            {%
+            endif
+            %}
+            >Transactions</a
+          >
+          <a
+            href="{% url 'transactions:categories' %}"
+            {%
+            if
+            active_page=""
+            ="categories"
+            %}class="active"
+            {%
+            endif
+            %}
+            >Categories</a
+          >
+          <a
+            href="{% url 'transactions:reports' %}"
+            {%
+            if
+            active_page=""
+            ="reports"
+            %}class="active"
+            {%
+            endif
+            %}
+            >Reports</a
+          >
+          <a href="{% url 'accounts:logout_view' %}" class="logout">Logout</a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">{% block topbar %}{% endblock %}</header>
+
+        <!-- Django Messages -->
+        {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %} {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    <!-- Auto-dismiss alerts -->
+    <script>
+      setTimeout(function () {
+        document.querySelectorAll(".alert").forEach(function (el) {
+          el.style.transition = "opacity 0.5s ease";
+          el.style.opacity = "0";
+          setTimeout(function () {
+            el.remove();
+          }, 500);
+        });
+      }, 3000);
+    </script>
+
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

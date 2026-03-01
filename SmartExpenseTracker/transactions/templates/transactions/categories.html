@@ -1,141 +1,150 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'layout.html' %} {% load static %} {% block title %}Categories |
+SmartTracker{% endblock %} {% block stylesheets %}
+<link rel="stylesheet" href="{% static 'transactions/css/categories.css' %}" />
+{% endblock %} {% block topbar %}
+<h1>Manage Categories</h1>
+{% endblock %} {% block content %}
+<!-- Add New Category Form -->
+<section class="add-category-card">
+  <h2>Add New Category</h2>
+  <form method="POST" class="add-category-form">
+    {% csrf_token %}
+    <div class="form-row">
+      <input
+        type="text"
+        name="name"
+        placeholder="Category name"
+        required
+        maxlength="50"
+      />
+      <select name="type" required>
+        <option value="">Select type</option>
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+      <button type="submit" class="btn primary">Add</button>
+    </div>
+  </form>
+</section>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Categories | SmartTracker</title>
-  <link rel="stylesheet" href="{% static 'transactions/css/categories.css' %}" />
-</head>
-
-<body>
-  <div class="dashboard-wrapper">
-
-    <aside class="sidebar">
-      <a href="{% url 'core:landing' %}" class="brand-link"><h2 class="brand">Smart<span>Tracker</span></h2></a>
-      <nav class="menu">
-        <a href="{% url 'dashboard:dashboard_view' %}">Dashboard</a>
-        <a href="{% url 'transactions:add_transaction' %}">Add Transaction</a>
-        <a href="{% url 'transactions:transactions' %}">Transactions</a>
-        <a href="{% url 'transactions:categories' %}" class="active">Categories</a>
-        <a href="{% url 'transactions:reports' %}">Reports</a>
-        <a href="{% url 'accounts:logout_view' %}" class="logout">Logout</a>
-      </nav>
-    </aside>
-
-    <main class="main-content">
-      <header class="topbar">
-        <h1>Manage Categories</h1>
-      </header>
-
-      {% if messages %}
-      <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
+<!-- Categories Grid -->
+<div class="categories-grid">
+  <!-- Expense Categories -->
+  <section class="category-card">
+    <h2 class="section-title expense-title">Expense Categories</h2>
+    <div class="category-list">
+      {% for cat in expense_categories %}
+      <div class="category-item" id="cat-{{ cat.pk }}">
+        <span class="cat-name">{{ cat.name }}</span>
+        <div class="cat-actions">
+          <button
+            class="action-btn edit"
+            onclick="startEdit({{ cat.pk }}, '{{ cat.name }}')"
+          >
+            Edit
+          </button>
+          <a
+            href="{% url 'transactions:delete_category' cat.pk %}"
+            class="action-btn delete"
+            onclick="return confirm('Delete category {{ cat.name }}?')"
+            >Delete</a
+          >
+        </div>
       </div>
-      {% endif %}
 
-      <!-- Add New Category Form -->
-      <section class="add-category-card">
-        <h2>Add New Category</h2>
-        <form method="POST" class="add-category-form">
-          {% csrf_token %}
-          <div class="form-row">
-            <input type="text" name="name" placeholder="Category name" required maxlength="50" />
-            <select name="type" required>
-              <option value="">Select type</option>
-              <option value="income">Income</option>
-              <option value="expense">Expense</option>
-            </select>
-            <button type="submit" class="btn primary">Add</button>
-          </div>
-        </form>
-      </section>
+      <!-- Hidden edit form -->
+      <form
+        method="POST"
+        action="{% url 'transactions:edit_category' cat.pk %}"
+        class="edit-form"
+        id="edit-form-{{ cat.pk }}"
+        style="display: none"
+      >
+        {% csrf_token %}
+        <input
+          type="text"
+          name="name"
+          value="{{ cat.name }}"
+          required
+          maxlength="50"
+        />
+        <button type="submit" class="action-btn save">Save</button>
+        <button
+          type="button"
+          class="action-btn cancel"
+          onclick="cancelEdit({{ cat.pk }})"
+        >
+          Cancel
+        </button>
+      </form>
+      {% empty %}
+      <p class="empty-msg">No expense categories yet.</p>
+      {% endfor %}
+    </div>
+  </section>
 
-      <!-- Categories Grid -->
-      <div class="categories-grid">
-
-        <!-- Expense Categories -->
-        <section class="category-card">
-          <h2 class="section-title expense-title">Expense Categories</h2>
-          <div class="category-list">
-            {% for cat in expense_categories %}
-            <div class="category-item" id="cat-{{ cat.pk }}">
-              <span class="cat-name">{{ cat.name }}</span>
-              <div class="cat-actions">
-                <button class="action-btn edit" onclick="startEdit({{ cat.pk }}, '{{ cat.name }}')">Edit</button>
-                <a href="{% url 'transactions:delete_category' cat.pk %}"
-                   class="action-btn delete"
-                   onclick="return confirm('Delete category {{ cat.name }}?')">Delete</a>
-              </div>
-            </div>
-
-            <!-- Hidden edit form -->
-            <form method="POST" action="{% url 'transactions:edit_category' cat.pk %}"
-                  class="edit-form" id="edit-form-{{ cat.pk }}" style="display:none;">
-              {% csrf_token %}
-              <input type="text" name="name" value="{{ cat.name }}" required maxlength="50" />
-              <button type="submit" class="action-btn save">Save</button>
-              <button type="button" class="action-btn cancel" onclick="cancelEdit({{ cat.pk }})">Cancel</button>
-            </form>
-            {% empty %}
-            <p class="empty-msg">No expense categories yet.</p>
-            {% endfor %}
-          </div>
-        </section>
-
-        <!-- Income Categories -->
-        <section class="category-card">
-          <h2 class="section-title income-title">Income Categories</h2>
-          <div class="category-list">
-            {% for cat in income_categories %}
-            <div class="category-item" id="cat-{{ cat.pk }}">
-              <span class="cat-name">{{ cat.name }}</span>
-              <div class="cat-actions">
-                <button class="action-btn edit" onclick="startEdit({{ cat.pk }}, '{{ cat.name }}')">Edit</button>
-                <a href="{% url 'transactions:delete_category' cat.pk %}"
-                   class="action-btn delete"
-                   onclick="return confirm('Delete category {{ cat.name }}?')">Delete</a>
-              </div>
-            </div>
-
-            <form method="POST" action="{% url 'transactions:edit_category' cat.pk %}"
-                  class="edit-form" id="edit-form-{{ cat.pk }}" style="display:none;">
-              {% csrf_token %}
-              <input type="text" name="name" value="{{ cat.name }}" required maxlength="50" />
-              <button type="submit" class="action-btn save">Save</button>
-              <button type="button" class="action-btn cancel" onclick="cancelEdit({{ cat.pk }})">Cancel</button>
-            </form>
-            {% empty %}
-            <p class="empty-msg">No income categories yet.</p>
-            {% endfor %}
-          </div>
-        </section>
-
+  <!-- Income Categories -->
+  <section class="category-card">
+    <h2 class="section-title income-title">Income Categories</h2>
+    <div class="category-list">
+      {% for cat in income_categories %}
+      <div class="category-item" id="cat-{{ cat.pk }}">
+        <span class="cat-name">{{ cat.name }}</span>
+        <div class="cat-actions">
+          <button
+            class="action-btn edit"
+            onclick="startEdit({{ cat.pk }}, '{{ cat.name }}')"
+          >
+            Edit
+          </button>
+          <a
+            href="{% url 'transactions:delete_category' cat.pk %}"
+            class="action-btn delete"
+            onclick="return confirm('Delete category {{ cat.name }}?')"
+            >Delete</a
+          >
+        </div>
       </div>
-    </main>
-  </div>
 
-  <script>
-    function startEdit(pk, name) {
-      document.getElementById('cat-' + pk).style.display = 'none';
-      document.getElementById('edit-form-' + pk).style.display = 'flex';
-    }
-    function cancelEdit(pk) {
-      document.getElementById('cat-' + pk).style.display = 'flex';
-      document.getElementById('edit-form-' + pk).style.display = 'none';
-    }
-    setTimeout(function () {
-      var alerts = document.querySelectorAll('.alert');
-      alerts.forEach(function (el) {
-        el.style.transition = 'opacity 0.5s ease';
-        el.style.opacity = '0';
-        setTimeout(function () { el.remove(); }, 500);
-      });
-    }, 3000);
-  </script>
-</body>
-
-</html>
+      <form
+        method="POST"
+        action="{% url 'transactions:edit_category' cat.pk %}"
+        class="edit-form"
+        id="edit-form-{{ cat.pk }}"
+        style="display: none"
+      >
+        {% csrf_token %}
+        <input
+          type="text"
+          name="name"
+          value="{{ cat.name }}"
+          required
+          maxlength="50"
+        />
+        <button type="submit" class="action-btn save">Save</button>
+        <button
+          type="button"
+          class="action-btn cancel"
+          onclick="cancelEdit({{ cat.pk }})"
+        >
+          Cancel
+        </button>
+      </form>
+      {% empty %}
+      <p class="empty-msg">No income categories yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %} {% block scripts %}
+<script>
+  function startEdit(pk, name) {
+    document.getElementById("cat-" + pk).style.display = "none";
+    document.getElementById("edit-form-" + pk).style.display = "flex";
+  }
+  function cancelEdit(pk) {
+    document.getElementById("cat-" + pk).style.display = "flex";
+    document.getElementById("edit-form-" + pk).style.display = "none";
+  }
+</script>
+{% endblock %}

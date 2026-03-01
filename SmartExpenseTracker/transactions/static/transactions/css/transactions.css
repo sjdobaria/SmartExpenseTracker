@@ -221,20 +221,8 @@ tbody tr:hover {
   padding: 30px 40px;
 }
 
-/* Responsive: Stack Sidebar on Small Screens */
-@media (max-width: 900px) {
-  .dashboard-wrapper {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    border-right: none;
-    border-bottom: 1px solid #2d3436;
-  }
-}
+/* ═══════════════════════════════════ */
+/*  MOBILE RESPONSIVE                 */
 
 /* Filter Form Row Logic */
 .filter-group-row {
@@ -279,7 +267,6 @@ tbody tr:hover {
   border: 1px solid rgba(46, 204, 113, 0.3);
 }
 
-/* Adjustments for inputs focus */
 .filter-group input:focus,
 .filter-group select:focus {
   border-color: #2ecc71;
@@ -287,83 +274,69 @@ tbody tr:hover {
   box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.2);
 }
 
-/* Flatpickr Dark Theme (Matches Other Pages) */
 .filter-group input[readonly] {
   cursor: pointer;
 }
 
-.flatpickr-calendar {
-  background: #1e2327 !important;
-  border: 1px solid #2d3436 !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
-  border-radius: 12px !important;
+/* Flatpickr Dark Theme */
+.flatpickr-calendar { background: #1e2327 !important; border: 1px solid #2d3436 !important; box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important; border-radius: 12px !important; }
+.flatpickr-months .flatpickr-month, .flatpickr-current-month .flatpickr-monthDropdown-months { background: #1e2327 !important; color: #e0e0e0 !important; }
+.flatpickr-day { color: #e0e0e0 !important; border-radius: 6px !important; }
+.flatpickr-day:hover { background: rgba(46,204,113,0.2) !important; border-color: transparent !important; }
+.flatpickr-day.selected { background: #2ecc71 !important; border-color: #2ecc71 !important; color: #000 !important; }
+.flatpickr-day.today { border-color: #2ecc71 !important; }
+.flatpickr-day.flatpickr-disabled { color: #555 !important; }
+.flatpickr-weekday { color: #b2bec3 !important; }
+span.flatpickr-weekday { background: #1e2327 !important; }
+.flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month { fill: #2ecc71 !important; color: #2ecc71 !important; }
+.flatpickr-current-month input.cur-year { color: #e0e0e0 !important; }
+
+/* ═══════════════════════════════════ */
+
+/* ═══════════════════════════════════ */
+/*  RESPONSIVE                        */
+/* ═══════════════════════════════════ */
+
+@media (max-width: 900px) {
+    .dashboard-wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid #2d3436;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table { min-width: 600px; }
+
+    .filter-group-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-group {
+        flex: none;
+        width: 100%;
+    }
 }
 
-.flatpickr-months .flatpickr-month,
-.flatpickr-current-month .flatpickr-monthDropdown-months {
-  background: #1e2327 !important;
-  color: #e0e0e0 !important;
-}
-
-.flatpickr-day {
-  color: #e0e0e0 !important;
-  border-radius: 6px !important;
-}
-
-.flatpickr-day:hover {
-  background: rgba(46, 204, 113, 0.2) !important;
-  border-color: transparent !important;
-}
-
-.flatpickr-day.selected {
-  background: #2ecc71 !important;
-  border-color: #2ecc71 !important;
-  color: #000 !important;
-}
-
-.flatpickr-day.today {
-  border-color: #2ecc71 !important;
-}
-
-.flatpickr-day.flatpickr-disabled {
-  color: #555 !important;
-}
-
-.flatpickr-weekday {
-  color: #b2bec3 !important;
-}
-
-span.flatpickr-weekday {
-  background: #1e2327 !important;
-}
-
-.flatpickr-months .flatpickr-prev-month,
-.flatpickr-months .flatpickr-next-month {
-  fill: #2ecc71 !important;
-  color: #2ecc71 !important;
-}
-
-.flatpickr-current-month input.cur-year {
-  color: #e0e0e0 !important;
-}
-
-/* Responsive fixes */
 @media (max-width: 600px) {
-  .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-
-  .filter-group-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-group {
-    flex: none;
-    width: 100%;
-  }
+    .main-content {
+        padding: 20px 15px;
+    }
 }
 
 /* Django Messages (Restored) */

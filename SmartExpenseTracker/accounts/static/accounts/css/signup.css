@@ -194,6 +194,33 @@ body {
 
     .signup-info {
         text-align: center;
+        padding: 40px 25px;
+    }
+
+    .signup-info h1 {
+        font-size: 1.6rem;
+    }
+
+    .signup-form {
+        padding: 40px 25px;
+    }
+
+    .signup-form h2 {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .signup-wrapper {
+        padding: 15px;
+    }
+
+    .signup-info {
+        padding: 30px 20px;
+    }
+
+    .signup-form {
+        padding: 30px 20px;
     }
 }
 

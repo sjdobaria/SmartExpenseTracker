@@ -178,8 +178,8 @@ body {
   padding: 30px 40px;
 }
 
-/* Responsive: Stack Sidebar on Small Screens */
-@media (max-width: 900px) {
+/* Responsive */
+@media (max-width: 768px) {
   .dashboard-wrapper {
     flex-direction: column;
   }

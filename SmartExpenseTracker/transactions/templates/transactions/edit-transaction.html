@@ -1,173 +1,164 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'layout.html' %} {% load static %} {% block title %}Edit Transaction
+| SmartTracker{% endblock %} {% block stylesheets %}
+<link
+  rel="stylesheet"
+  href="{% static 'transactions/css/add-transaction.css' %}"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{% endblock %} {% block topbar %}
+<h1>Edit Transaction</h1>
+<a href="{% url 'transactions:transactions' %}" class="back-link">Back</a>
+{% endblock %} {% block content %}
+<section class="form-container">
+  <form class="transaction-form" method="POST">
+    {% csrf_token %}
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edit Transaction | SmartTracker</title>
-  <link rel="stylesheet" href="{% static 'transactions/css/add-transaction.css' %}" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css" />
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-</head>
+    <div class="form-group">
+      <label for="type">Transaction Type</label>
+      <select id="type" name="type" required onchange="filterCategories()">
+        <option value="">Select type</option>
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+    </div>
 
-<body>
-  <div class="dashboard-wrapper">
-    <aside class="sidebar">
-      <a href="{% url 'core:landing' %}" class="brand-link"><h2 class="brand">Smart<span>Tracker</span></h2></a>
-      <nav class="menu">
-        <a href="{% url 'dashboard:dashboard_view' %}">Dashboard</a>
-        <a href="{% url 'transactions:add_transaction' %}">Add Transaction</a>
-        <a href="{% url 'transactions:transactions' %}">Transactions</a>
-        <a href="{% url 'transactions:categories' %}">Categories</a>
-        <a href="{% url 'transactions:reports' %}">Reports</a>
-        <a href="{% url 'accounts:logout_view' %}" class="logout">Logout</a>
-      </nav>
-    </aside>
+    <div class="form-group">
+      <label for="amount">Amount</label>
+      <input
+        type="number"
+        id="amount"
+        name="amount"
+        value="{{ expense.amount }}"
+        min="0.01"
+        step="0.01"
+        required
+      />
+    </div>
 
-    <main class="main-content">
-      <header class="topbar">
-        <h1>Edit Transaction</h1>
-        <a href="{% url 'transactions:transactions' %}" class="back-link">Back</a>
-      </header>
-
-      {% if messages %}
-      <div class="messages">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    <div class="form-group">
+      <label for="category">Category</label>
+      <select id="category" name="category" required>
+        <option value="">Select category</option>
+        {% for cat in expense_categories %}
+        <option value="{{ cat.name }}" class="expense-cat">
+          {{ cat.name }}
+        </option>
+        {% endfor %} {% for cat in income_categories %}
+        <option value="{{ cat.name }}" class="income-cat">
+          {{ cat.name }}
+        </option>
         {% endfor %}
-      </div>
-      {% endif %}
+      </select>
+      <a href="{% url 'transactions:categories' %}" class="manage-link"
+        >Manage categories</a
+      >
+    </div>
 
-      <section class="form-container">
-        <form class="transaction-form" method="POST">
-          {% csrf_token %}
+    <div class="form-group">
+      <label for="date">Date</label>
+      <input
+        type="text"
+        id="date"
+        name="date"
+        value="{{ expense.date|date:'Y-m-d' }}"
+        placeholder="Select date"
+        required
+        readonly
+      />
+    </div>
 
-          <div class="form-group">
-            <label for="type">Transaction Type</label>
-            <select id="type" name="type" required onchange="filterCategories()">
-              <option value="">Select type</option>
-              <option value="income">Income</option>
-              <option value="expense">Expense</option>
-            </select>
-          </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        name="description"
+        rows="3"
+        placeholder="Optional note..."
+      >
+{{ expense.description }}</textarea
+      >
+    </div>
 
-          <div class="form-group">
-            <label for="amount">Amount</label>
-            <input type="number" id="amount" name="amount"
-              value="{{ expense.amount }}" min="0.01" step="0.01" required />
-          </div>
+    <div class="form-group">
+      <label for="payment">Payment Mode</label>
+      <select id="payment" name="payment">
+        <option value="Cash">Cash</option>
+        <option value="UPI">UPI</option>
+        <option value="Debit Card">Debit Card</option>
+        <option value="Credit Card">Credit Card</option>
+        <option value="Net Banking">Net Banking</option>
+      </select>
+    </div>
 
-          <div class="form-group">
-            <label for="category">Category</label>
-            <select id="category" name="category" required>
-              <option value="">Select category</option>
-              {% for cat in expense_categories %}
-              <option value="{{ cat.name }}" class="expense-cat">{{ cat.name }}</option>
-              {% endfor %}
-              {% for cat in income_categories %}
-              <option value="{{ cat.name }}" class="income-cat">{{ cat.name }}</option>
-              {% endfor %}
-            </select>
-            <a href="{% url 'transactions:categories' %}" class="manage-link">Manage categories</a>
-          </div>
+    <div class="actions">
+      <a href="{% url 'transactions:transactions' %}" class="btn secondary"
+        >Cancel</a
+      >
+      <button type="submit" class="btn primary">Update Transaction</button>
+    </div>
+  </form>
+</section>
+{% endblock %} {% block scripts %}
+<script>
+  // Pre-fill values from the existing transaction
+  var currentType = "{{ expense.transaction_type|lower }}";
+  var currentCategory = "{{ expense.category }}";
+  var currentPayment = "{{ expense.payment_mode }}";
 
-          <div class="form-group">
-            <label for="date">Date</label>
-            <input type="text" id="date" name="date"
-              value="{{ expense.date|date:'Y-m-d' }}" placeholder="Select date" required readonly />
-          </div>
+  // Set transaction type
+  document.getElementById("type").value = currentType;
 
-          <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description"
-              rows="3" placeholder="Optional note...">{{ expense.description }}</textarea>
-          </div>
+  // Filter and set category
+  function filterCategories() {
+    var type = document.getElementById("type").value;
+    var catSelect = document.getElementById("category");
+    var options = catSelect.querySelectorAll("option");
 
-          <div class="form-group">
-            <label for="payment">Payment Mode</label>
-            <select id="payment" name="payment">
-              <option value="Cash">Cash</option>
-              <option value="UPI">UPI</option>
-              <option value="Debit Card">Debit Card</option>
-              <option value="Credit Card">Credit Card</option>
-              <option value="Net Banking">Net Banking</option>
-            </select>
-          </div>
-
-          <div class="actions">
-            <a href="{% url 'transactions:transactions' %}" class="btn secondary">Cancel</a>
-            <button type="submit" class="btn primary">Update Transaction</button>
-          </div>
-        </form>
-      </section>
-    </main>
-  </div>
-
-  <script>
-    // Pre-fill values from the existing transaction
-    var currentType = "{{ expense.transaction_type|lower }}";
-    var currentCategory = "{{ expense.category }}";
-    var currentPayment = "{{ expense.payment_mode }}";
-
-    // Set transaction type
-    document.getElementById('type').value = currentType;
-
-    // Filter and set category
-    function filterCategories() {
-      var type = document.getElementById('type').value;
-      var catSelect = document.getElementById('category');
-      var options = catSelect.querySelectorAll('option');
-
-      options.forEach(function(opt) {
-        if (opt.value === '') {
-          opt.textContent = type ? 'Select category' : 'Select type first';
-          opt.style.display = '';
-        } else if (opt.classList.contains('expense-cat')) {
-          opt.style.display = (type === 'expense') ? '' : 'none';
-        } else if (opt.classList.contains('income-cat')) {
-          opt.style.display = (type === 'income') ? '' : 'none';
-        }
-      });
-    }
-
-    // Initialize: filter categories then set current value
-    filterCategories();
-    document.getElementById('category').value = currentCategory;
-
-    // Set payment mode
-    document.getElementById('payment').value = currentPayment;
-
-    // Flatpickr
-    flatpickr("#date", {
-      dateFormat: "Y-m-d",
-      maxDate: "today",
-      disableMobile: true,
-      animate: true,
-      theme: "dark",
-      defaultDate: "{{ expense.date|date:'Y-m-d' }}",
-    });
-
-    // Amount validation
-    var amountInput = document.getElementById('amount');
-    amountInput.addEventListener('input', function () {
-      if (parseFloat(this.value) <= 0) {
-        this.setCustomValidity('Amount must be greater than 0');
-      } else {
-        this.setCustomValidity('');
+    options.forEach(function (opt) {
+      if (opt.value === "") {
+        opt.textContent = type ? "Select category" : "Select type first";
+        opt.style.display = "";
+      } else if (opt.classList.contains("expense-cat")) {
+        opt.style.display = type === "expense" ? "" : "none";
+      } else if (opt.classList.contains("income-cat")) {
+        opt.style.display = type === "income" ? "" : "none";
       }
     });
+  }
 
-    // Auto-dismiss alerts
-    setTimeout(function () {
-      document.querySelectorAll('.alert').forEach(function (el) {
-        el.style.transition = 'opacity 0.5s ease';
-        el.style.opacity = '0';
-        setTimeout(function () { el.remove(); }, 500);
-      });
-    }, 3000);
-  </script>
-</body>
+  // Initialize: filter categories then set current value
+  filterCategories();
+  document.getElementById("category").value = currentCategory;
 
-</html>
+  // Set payment mode
+  document.getElementById("payment").value = currentPayment;
+
+  // Flatpickr
+  flatpickr("#date", {
+    dateFormat: "Y-m-d",
+    maxDate: "today",
+    disableMobile: true,
+    animate: true,
+    theme: "dark",
+    defaultDate: "{{ expense.date|date:'Y-m-d' }}",
+  });
+
+  // Amount validation
+  var amountInput = document.getElementById("amount");
+  amountInput.addEventListener("input", function () {
+    if (parseFloat(this.value) <= 0) {
+      this.setCustomValidity("Amount must be greater than 0");
+    } else {
+      this.setCustomValidity("");
+    }
+  });
+</script>
+{% endblock %}

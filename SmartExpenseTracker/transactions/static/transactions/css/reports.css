@@ -378,29 +378,16 @@ body {
         border-bottom: 1px solid #2d3436;
     }
 
-    .charts-row {
-        grid-template-columns: 1fr;
-    }
+    .topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .charts-row { grid-template-columns: 1fr; }
+    .filters-form { flex-direction: column; }
+    .filter-group input, .filter-group select, .btn { width: 100%; }
 }
 
 @media (max-width: 600px) {
-    .main-content {
-        padding: 20px 15px;
-    }
-
-    .filters-form {
-        flex-direction: column;
-    }
-
-    .filter-group input,
-    .filter-group select,
-    .btn {
-        width: 100%;
-    }
-
-    .summary-cards {
-        grid-template-columns: 1fr 1fr;
-    }
+    .main-content { padding: 20px 15px; }
+    .summary-cards { grid-template-columns: 1fr 1fr; }
+    .chart-card { padding: 15px; }
 }
 
 /* ===== Flatpickr Dark Theme ===== */

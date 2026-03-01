@@ -361,23 +361,13 @@ body {
         border-bottom: 1px solid #2d3436;
     }
 
-    .categories-grid {
-        grid-template-columns: 1fr;
-    }
+    .categories-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 600px) {
-    .main-content {
-        padding: 20px 15px;
-    }
-
-    .add-category-form .form-row {
-        flex-direction: column;
-    }
-
-    .add-category-form input[type="text"],
-    .add-category-form select,
-    .btn {
-        width: 100%;
-    }
+    .main-content { padding: 20px 15px; }
+    .add-category-form .form-row { flex-direction: column; }
+    .add-category-form input[type="text"], .add-category-form select, .btn { width: 100%; }
+    .add-category-card { padding: 20px 15px; }
+    .category-card { padding: 20px 15px; }
 }
